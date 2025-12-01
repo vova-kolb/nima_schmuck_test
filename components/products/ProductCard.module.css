@@ -1,0 +1,64 @@
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: #ffffff;
+  overflow: hidden;
+  transition: transform 150ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.info {
+  padding-top: 15px;
+}
+
+.category {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--color-accent);
+}
+
+.title {
+  margin: 0 0 8px;
+  color: var(--color-text-primary);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.material {
+  margin: 0 0 6px;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+}
+
+.message {
+  margin: 0 0 6px;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+}
+
+.price {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: 16px;
+}
