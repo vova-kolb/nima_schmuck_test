@@ -1,5 +1,6 @@
 .section {
   margin-top: 100px;
+  width: 100%;
 }
 
 .header {
@@ -47,7 +48,8 @@
   border-radius: 999px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease, transform 120ms ease;
+  transition: background-color 140ms ease, color 140ms ease,
+    border-color 140ms ease, transform 120ms ease;
   font-family: var(--font-jost), sans-serif;
 }
 
@@ -93,7 +95,8 @@
   color: #4a4441;
   cursor: pointer;
   font-weight: 600;
-  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  transition: transform 120ms ease, border-color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .pageButton:hover:not(:disabled) {
@@ -179,5 +182,3 @@
     margin-top: 60px;
   }
 }
-
-
