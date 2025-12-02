@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api";
+import ProductActions from "@/components/products/ProductActions";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -112,6 +113,8 @@ export default async function ProductPage({ params = {} }) {
                 <p className={styles.message}>"{message}"</p>
               </div>
             )}
+
+            <ProductActions product={product} />
           </div>
         </div>
       </div>

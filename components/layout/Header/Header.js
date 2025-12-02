@@ -1,8 +1,13 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useCart } from '@/lib/hooks/useCart';
 import styles from './Header.module.css';
 
 export default function Header() {
+  const { totalCount } = useCart();
+
   return (
     <header className={styles.header}>
       <div className={`container ${styles.container}`}>
@@ -64,11 +69,7 @@ export default function Header() {
             <span />
           </button>
 
-          <button
-            type="button"
-            className={styles.iconButton}
-            aria-label="Open cart"
-          >
+          <Link href="/cart" className={`${styles.iconButton} ${styles.cartButton}`} aria-label="Open cart">
             <svg
               className={styles.cartIcon}
               width="24"
@@ -87,7 +88,12 @@ export default function Header() {
               <circle cx="9.5" cy="20" r="1.25" />
               <circle cx="15.5" cy="20" r="1.25" />
             </svg>
-          </button>
+            {totalCount > 0 && (
+              <span className={styles.cartBadge} aria-label={`${totalCount} items in cart`}>
+                {totalCount}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
     </header>

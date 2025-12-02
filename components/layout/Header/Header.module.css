@@ -67,6 +67,8 @@
   align-items: center;
   justify-content: center;
   color: #181818;
+  position: relative;
+  text-decoration: none;
 }
 
 .iconButton:hover .cartIcon,
@@ -74,8 +76,27 @@
   opacity: 0.7;
 }
 
+.cartButton {
+  text-decoration: none;
+}
+
 .cartIcon {
   display: block;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 18px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
 }
 
 .burgerButton {
