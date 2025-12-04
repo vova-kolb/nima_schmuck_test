@@ -1,16 +1,17 @@
 .section {
-  padding: clamp(28px, 5vw, 64px) 0 72px;
+  padding: clamp(32px, 6vw, 80px) 0 96px;
 }
 
-.card {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 28px;
-  background: #ffffff;
-  border: 1px solid #f0eaea;
-  border-radius: 16px;
+.layout {
   display: grid;
-  gap: 10px;
+  gap: 22px;
+  grid-template-columns: 1.35fr minmax(320px, 0.9fr);
+  align-items: start;
+}
+
+.main {
+  display: grid;
+  gap: 14px;
 }
 
 .kicker {
@@ -24,7 +25,7 @@
 
 .title {
   margin: 0;
-  font-size: clamp(24px, 4vw, 30px);
+  font-size: clamp(26px, 4vw, 34px);
   color: var(--color-text-primary);
 }
 
@@ -34,11 +35,178 @@
   line-height: 1.6;
 }
 
+.card {
+  margin-top: 6px;
+  border: 1px solid #f0eaea;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.03);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 18px 6px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cardMeta {
+  margin: 4px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 12px 18px 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 14px;
+  background: #faf6f6;
+}
+
+.thumb {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f3eded;
+}
+
+.thumbImg {
+  object-fit: cover;
+}
+
+.itemContent {
+  display: grid;
+  gap: 6px;
+}
+
+.itemName {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.itemMeta {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.itemPrice {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.summary {
+  position: sticky;
+  top: 32px;
+  border-radius: 18px;
+  border: 1px solid #f0eaea;
+  background: linear-gradient(180deg, #fff 0%, #fdf5f5 100%);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.04);
+}
+
+.summaryRow,
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summaryValue {
+  font-weight: 700;
+}
+
+.summaryTotal {
+  padding-top: 6px;
+  border-top: 1px solid #f0eaea;
+  font-size: 18px;
+}
+
+.status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.error {
+  color: #963131;
+  background: #ffeaea;
+  border: 1px solid #f3c3c3;
+}
+
+.success {
+  color: #1e5c39;
+  background: #e6f6ec;
+  border: 1px solid #c2e3cf;
+}
+
+.payButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.payButton:hover,
+.payButton:focus-visible {
+  background: #c35e63;
+}
+
+.payButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .link,
@@ -73,11 +241,43 @@
 .linkSecondary {
   background: #f6f0f0;
   color: #513737;
-  border-color: #e3d7d7;
+  border: 1px solid #e3d7d7;
 }
 
 .linkSecondary:hover,
 .linkSecondary:focus-visible {
   background: #ecdddc;
   border-color: #e3d7d7;
+}
+
+.empty {
+  padding: 32px;
+  border: 1px dashed #e3d7d7;
+  border-radius: 16px;
+  display: grid;
+  gap: 10px;
+  background: #fff;
+  max-width: 560px;
+}
+
+@media (max-width: 940px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .item {
+    grid-template-columns: 72px 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .itemPrice {
+    justify-self: end;
+    grid-column: 1 / -1;
+  }
 }
