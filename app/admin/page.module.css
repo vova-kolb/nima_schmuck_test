@@ -1,0 +1,140 @@
+.section {
+  padding: clamp(28px, 5vw, 56px) 0 64px;
+  background: radial-gradient(circle at 20% 20%, #fff4f6, #ffffff 42%),
+    linear-gradient(120deg, #ffffff 0%, #fff7f9 100%);
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.kicker {
+  margin: 0 0 4px;
+  color: var(--color-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 36px);
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--color-text-secondary);
+  max-width: 720px;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease,
+    color 120ms ease, border-color 120ms ease;
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.primary {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+  box-shadow: 0 10px 20px rgba(209, 138, 138, 0.3);
+}
+
+.primary:hover,
+.primary:focus-visible {
+  background: #c35e63;
+  border-color: #c35e63;
+}
+
+.secondary {
+  background: #f6f0f0;
+  color: #513737;
+  border-color: #e3d7d7;
+}
+
+.secondary:hover,
+.secondary:focus-visible {
+  background: #ecdddc;
+  border-color: #e3d7d7;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.formColumn {
+}
+
+.formPlaceholder {
+  background: #ffffff;
+  border: 1px dashed #e5cfcf;
+  border-radius: 16px;
+  padding: 18px;
+  display: grid;
+  gap: 8px;
+  color: var(--color-text-secondary);
+}
+
+.placeholderTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.placeholderText {
+  margin: 0 0 4px;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .formColumn {
+    position: relative;
+    top: 0;
+  }
+
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .heroActions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
