@@ -2,28 +2,20 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect } from 'react';
+import { useCart } from '@/lib/hooks/useCart';
 import styles from './page.module.css';
 
 function SuccessContent() {
   const params = useSearchParams();
   const sessionId = params.get('session_id');
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState({ type: '', message: '' });
+  const { clearCart } = useCart();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!email.includes('@')) {
-      setStatus({ type: 'error', message: 'Please enter a valid email.' });
-      return;
+  useEffect(() => {
+    if (sessionId) {
+      clearCart();
     }
-
-    setStatus({
-      type: 'success',
-      message: 'Thanks! We will send order updates to this email.',
-    });
-    setEmail('');
-  };
+  }, [sessionId, clearCart]);
 
   return (
     <section className={styles.section}>
@@ -38,41 +30,9 @@ function SuccessContent() {
           </p>
           {sessionId && <p className={styles.meta}>Transaction ID: {sessionId}</p>}
 
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <label className={styles.label} htmlFor="email">
-              Email for updates
-            </label>
-            <div className={styles.inputRow}>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                placeholder="you@example.com"
-                onChange={(e) => setEmail(e.target.value)}
-                className={styles.input}
-                required
-              />
-              <button type="submit" className={styles.button}>
-                Subscribe
-              </button>
-            </div>
-            {status.message && (
-              <p
-                className={`${styles.status} ${
-                  status.type === 'error' ? styles.error : styles.success
-                }`}
-              >
-                {status.message}
-              </p>
-            )}
-          </form>
-
           <div className={styles.actions}>
             <Link href="/" className={styles.link}>
               Back to catalog
-            </Link>
-            <Link href="/cart" className={styles.linkSecondary}>
-              View cart
             </Link>
           </div>
         </div>
