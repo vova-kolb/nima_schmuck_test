@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import styles from './page.module.css';
 
-export default function SuccessPage() {
+function SuccessContent() {
   const params = useSearchParams();
   const sessionId = params.get('session_id');
   const [email, setEmail] = useState('');
@@ -27,7 +27,7 @@ export default function SuccessPage() {
 
   return (
     <section className={styles.section}>
-        <div className="container">
+      <div className="container">
         <div className={styles.card}>
           <div className={styles.badge}>OK</div>
           <p className={styles.kicker}>Payment completed</p>
@@ -78,5 +78,13 @@ export default function SuccessPage() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<section className={styles.section}>Loading...</section>}>
+      <SuccessContent />
+    </Suspense>
   );
 }
