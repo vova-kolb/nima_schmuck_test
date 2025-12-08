@@ -1,0 +1,30 @@
+.wrapper {
+  min-height: 100%;
+  background: #ffffff;
+}
+
+.topBar {
+  background: #1f1f1f;
+  color: #f6f3f3;
+  padding: 14px 0;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+.topBarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 13px;
+  color: #f0d9d9;
+}
+
+.content {
+  padding-top: 12px;
+}
