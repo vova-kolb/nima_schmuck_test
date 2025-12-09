@@ -1,67 +1,93 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdminProductForm from "@/components/admin/AdminProductForm";
 import AdminProductTable from "@/components/admin/AdminProductTable";
-import {
-  createProduct,
-  deleteProduct,
-  fetchProducts,
-  updateProduct,
-} from "@/lib/api";
-import styles from "../../page.module.css";
+import ProductFilters from "@/components/products/ProductFilters";
+import { createProduct, deleteProduct, updateProduct } from "@/lib/api";
+import { useProducts } from "@/lib/hooks/useProducts";
+import styles from "./page.module.css";
 
 const PAGE_SIZE = 10;
-const SORT_FIELD = "id";
-const SORT_ORDER = "desc";
+const TABS = [
+  { id: "products", label: "Products" },
+  { id: "workshops", label: "Workshops" },
+];
+
+const SORT_OPTIONS = [
+  { label: "No Sorting", value: "" },
+  { label: "Price: Low to High", value: "price:asc" },
+  { label: "Price: High to Low", value: "price:desc" },
+  { label: "Name: A to Z", value: "name:asc" },
+  { label: "Name: Z to A", value: "name:desc" },
+];
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("products");
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState("create");
   const [activeProduct, setActiveProduct] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const loadProducts = useCallback(async (nextPage = 1) => {
-    setLoading(true);
-    setError("");
-    try {
-      const { items, totalPages: apiPages, page: apiPage } =
-        await fetchProducts({
-          page: nextPage,
-          limit: PAGE_SIZE,
-          sortBy: SORT_FIELD,
-          order: SORT_ORDER,
-        });
-
-      const sortedItems = [...items].sort((a, b) => {
-        const aId = Number(a.id) || 0;
-        const bId = Number(b.id) || 0;
-        return bId - aId;
-      });
-
-      setProducts(sortedItems);
-      setPage(apiPage || nextPage);
-      setTotalPages(apiPages || 1);
-    } catch (e) {
-      setError("Failed to load products.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const {
+    products,
+    categories,
+    materials,
+    selectedCategory,
+    selectedMaterial,
+    searchTerm,
+    sortBy,
+    sortOrder,
+    page,
+    totalPages,
+    total,
+    loading,
+    error,
+    selectCategory,
+    selectMaterial,
+    updateSearch,
+    selectSort,
+    goToPage,
+    reload,
+  } = useProducts({ pageSize: PAGE_SIZE });
 
   useEffect(() => {
-    loadProducts(1);
-  }, [loadProducts]);
+    if (activeTab === "workshops" && selectedCategory.toLowerCase() !== "workshop") {
+      selectCategory("workshop");
+    }
+    if (activeTab === "products" && selectedCategory.toLowerCase() === "workshop") {
+      selectCategory("");
+    }
+  }, [activeTab, selectCategory, selectedCategory]);
+
+  const visibleProducts = useMemo(() => {
+    const normalize = (value) => String(value || "").toLowerCase();
+    return products.filter((item) => {
+      const isWorkshop = normalize(item.category) === "workshop";
+      return activeTab === "workshops" ? isWorkshop : !isWorkshop;
+    });
+  }, [products, activeTab]);
+
+  const categoriesForTab = useMemo(() => {
+    const normalize = (value) => String(value || "").toLowerCase();
+    const filtered = categories.filter((cat) =>
+      activeTab === "workshops"
+        ? normalize(cat) === "workshop"
+        : normalize(cat) !== "workshop"
+    );
+    if (activeTab === "workshops" && !filtered.some((cat) => normalize(cat) === "workshop")) {
+      return [...filtered, "workshop"];
+    }
+    return filtered;
+  }, [categories, activeTab]);
 
   const handlePageChange = async (nextPage) => {
-    if (nextPage < 1 || nextPage > totalPages) return;
-    await loadProducts(nextPage);
+    await goToPage(nextPage);
+  };
+
+  const handleRefresh = async () => {
+    await reload();
   };
 
   const openCreateForm = () => {
@@ -90,10 +116,11 @@ export default function AdminProductsPage() {
     try {
       if (formMode === "edit" && activeProduct?.id !== undefined) {
         await updateProduct(activeProduct.id, payload);
+        await reload();
       } else {
         await createProduct(payload);
+        await goToPage(1);
       }
-      await loadProducts(formMode === "edit" ? page : 1);
       setFormOpen(false);
       setActiveProduct(null);
     } catch (e) {
@@ -114,7 +141,7 @@ export default function AdminProductsPage() {
     setActionError("");
     try {
       await deleteProduct(product.id);
-      await loadProducts(page);
+      await reload();
     } catch (e) {
       setActionError("Failed to delete product.");
     } finally {
@@ -122,50 +149,128 @@ export default function AdminProductsPage() {
     }
   };
 
+  const handleCategorySelect = (value) => {
+    if (activeTab === "workshops") {
+      selectCategory("workshop");
+      return;
+    }
+    selectCategory(value);
+  };
+
+  const currentTitle = activeTab === "workshops" ? "Workshops" : "Products";
+  const perPageLabel =
+    activeTab === "workshops"
+      ? `${visibleProducts.length} workshops on this page`
+      : `${visibleProducts.length} products on this page`;
+
+  const handleOverlayClick = (event) => {
+    if (event.target === event.currentTarget) {
+      handleCancel();
+    }
+  };
+
   return (
     <section className={styles.section}>
       <div className="container">
-        <div className={styles.hero}>
+        <div className={styles.pageHeader}>
           <div>
-            <p className={styles.kicker}>Admin panel</p>
-            <h1 className={styles.title}>Products</h1>
+            <p className={styles.kicker}>Admin</p>
+            <h1 className={styles.title}>Products & Workshops</h1>
+            <p className={styles.subtitle}>
+              Manage your handmade bracelet collection and workshops in one place.
+            </p>
           </div>
-          <div className={styles.heroActions}>
+          <div className={styles.tabs}>
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`${styles.tabButton} ${activeTab === tab.id ? styles.activeTab : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.toolbar}>
+          <ProductFilters
+            className={styles.filters}
+            variant="toolbar"
+            searchPlaceholder={`Search ${currentTitle.toLowerCase()}...`}
+            searchTerm={searchTerm}
+            onSearchChange={updateSearch}
+            categories={categoriesForTab}
+            selectedCategory={activeTab === "workshops" ? "workshop" : selectedCategory}
+            onCategoryChange={handleCategorySelect}
+            categoryPlaceholder="All categories"
+            materials={materials}
+            selectedMaterial={selectedMaterial}
+            onMaterialChange={selectMaterial}
+            materialPlaceholder="All materials"
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSortChange={selectSort}
+            sortOptions={SORT_OPTIONS}
+            showLabels={false}
+            showMaterial={materials.length > 0}
+          />
+
+          <div className={styles.toolbarActions}>
             <button
               type="button"
               className={`${styles.button} ${styles.primary}`}
               onClick={openCreateForm}
               disabled={submitting}
             >
-              Add Product
-            </button>
-            <button
-              type="button"
-              className={`${styles.button} ${styles.secondary}`}
-              onClick={loadProducts}
-              disabled={loading || submitting}
-            >
-              Refresh
+              + Add Product
             </button>
           </div>
         </div>
 
-        <div className={styles.layout}>
-          <AdminProductTable
-            products={products}
-            loading={loading}
-            error={error}
-            onEdit={openEditForm}
-            onDelete={handleDelete}
-            onRefresh={() => loadProducts(page)}
-            page={page}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            disableActions={submitting}
-          />
+        <AdminProductTable
+          products={visibleProducts}
+          loading={loading}
+          error={error}
+          onEdit={openEditForm}
+          onDelete={handleDelete}
+          onRefresh={handleRefresh}
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          onPageChange={handlePageChange}
+          disableActions={submitting}
+          title={`All ${currentTitle}`}
+          subtitle={perPageLabel}
+        />
 
-          <div className={styles.formColumn}>
-            {formOpen ? (
+        {formOpen && (
+          <div
+            className={styles.modalOverlay}
+            role="dialog"
+            aria-modal="true"
+            onClick={handleOverlayClick}
+          >
+            <div className={styles.modal}>
+              <div className={styles.modalHeader}>
+                <div>
+                  <p className={styles.modalKicker}>
+                    {formMode === "edit" ? "Edit" : "Create"}
+                  </p>
+                  <h3 className={styles.modalTitle}>
+                    {formMode === "edit" ? "Edit product" : "Add a new product"}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  className={styles.closeButton}
+                  onClick={handleCancel}
+                  aria-label="Close form"
+                >
+                  ×
+                </button>
+              </div>
               <AdminProductForm
                 mode={formMode}
                 initialData={activeProduct}
@@ -174,26 +279,9 @@ export default function AdminProductsPage() {
                 submitting={submitting}
                 serverError={actionError}
               />
-            ) : (
-              <div className={styles.formPlaceholder}>
-                <p className={styles.placeholderTitle}>
-                  Select a product to edit or create a new one.
-                </p>
-                <p className={styles.placeholderText}>
-                  The form will appear here with all database fields, ready for
-                  quick changes.
-                </p>
-                <button
-                  type="button"
-                  className={`${styles.button} ${styles.primary}`}
-                  onClick={openCreateForm}
-                >
-                  Add Product
-                </button>
-              </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

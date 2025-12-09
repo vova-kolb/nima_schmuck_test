@@ -1,0 +1,86 @@
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.card {
+  padding: clamp(12px, 3vw, 16px);
+  border-radius: 12px;
+  background: var(--color-primary);
+  border: 1px solid #e4e4e4;
+}
+
+.toolbar {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f4f6f8;
+  border: 1px solid #e3e7ec;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #857f7c;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d9d9d9;
+  background: #f9f9f9;
+  color: #4a4441;
+  outline: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  appearance: none;
+}
+
+.input:hover {
+  border-color: #c8c8c8;
+}
+
+.input:focus {
+  border-color: #d86972;
+  box-shadow: 0 0 0 2px rgba(216, 105, 114, 0.18);
+  background: #ffffff;
+}
+
+.select {
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.41.59 6 5.17 10.59.59 12 2 6 8 0 2z' fill='%23857f7c'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 12px 8px;
+  background-position: right 12px center;
+}
+
+.input option {
+  color: #4a4441;
+  background: #ffffff;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filters :global(select) {
+  background-color: #f9f9f9;
+}
+
+@media (max-width: 640px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useProducts } from '@/lib/hooks/useProducts';
 import ProductGrid from './ProductGrid';
+import ProductFilters from './ProductFilters';
 import styles from './ProductsSection.module.css';
 
 export default function ProductsSection() {
@@ -25,29 +26,11 @@ export default function ProductsSection() {
     updateSearch,
     selectSort,
   } = useProducts();
-  const categoryOptions = ['All', ...categories];
-
-  const handleCategoryChange = async (e) => {
-    await selectCategory(e.target.value);
-  };
-
-  const handleMaterialChange = async (e) => {
-    await selectMaterial(e.target.value);
-  };
-
-  const handleSearchChange = (e) => {
-    updateSearch(e.target.value);
-  };
-
-  const handleSortChange = async (e) => {
-    const value = e.target.value;
-    if (!value) {
-      await selectSort({ sort: '', order: '' });
-      return;
-    }
-    const [sort, order] = value.split(':');
-    await selectSort({ sort, order });
-  };
+  const sortOptions = [
+    { label: 'Default', value: '' },
+    { label: 'Price: Low to High', value: 'price:asc' },
+    { label: 'Price: High to Low', value: 'price:desc' },
+  ];
 
   return (
     <section className={styles.section}>
@@ -83,75 +66,20 @@ export default function ProductsSection() {
           </div> */}
         </div>
 
-        <div className={styles.controlsRow}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="search">
-              Search
-            </label>
-            <input
-              id="search"
-              type="search"
-              className={styles.input}
-              placeholder="Search products"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="material">
-              Material
-            </label>
-            <select
-              id="material"
-              className={`${styles.input} ${styles.select}`}
-              value={selectedMaterial}
-              onChange={handleMaterialChange}
-            >
-              <option value="">All materials</option>
-              {materials.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="category">
-              Category
-            </label>
-            <select
-              id="category"
-              className={`${styles.input} ${styles.select}`}
-              value={selectedCategory}
-              onChange={handleCategoryChange}
-            >
-              <option value="">All categories</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="sort">
-              Sort
-            </label>
-            <select
-              id="sort"
-              className={`${styles.input} ${styles.select}`}
-              value={sortBy && sortOrder ? `${sortBy}:${sortOrder}` : ''}
-              onChange={handleSortChange}
-            >
-              <option value="">Default</option>
-              <option value="price:asc">Price: Low to High</option>
-              <option value="price:desc">Price: High to Low</option>
-            </select>
-          </div>
-        </div>
+        <ProductFilters
+          searchTerm={searchTerm}
+          onSearchChange={updateSearch}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={selectCategory}
+          materials={materials}
+          selectedMaterial={selectedMaterial}
+          onMaterialChange={selectMaterial}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={selectSort}
+          sortOptions={sortOptions}
+        />
 
         {loading && <p className={styles.status}>Loading...</p>}
         {error && <p className={`${styles.status} ${styles.error}`}>{error}</p>}
