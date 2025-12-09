@@ -58,6 +58,10 @@
   gap: 16px;
 }
 
+.adminLink {
+  display: none;
+}
+
 .iconButton {
   border: none;
   padding: 4px;

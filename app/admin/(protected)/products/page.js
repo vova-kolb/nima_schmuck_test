@@ -4,7 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import AdminProductForm from "@/components/admin/AdminProductForm";
 import AdminProductTable from "@/components/admin/AdminProductTable";
 import ProductFilters from "@/components/products/ProductFilters";
-import { createProduct, deleteProduct, updateProduct } from "@/lib/api";
+import {
+  createProduct,
+  deleteProduct,
+  updateProduct,
+  uploadProductGallery,
+} from "@/lib/api";
 import { useProducts } from "@/lib/hooks/useProducts";
 import styles from "./page.module.css";
 
@@ -110,17 +115,37 @@ export default function AdminProductsPage() {
     setActionError("");
   };
 
-  const handleSave = async (payload) => {
+  const handleSave = async ({ data, avatarFile, galleryFiles }) => {
     setSubmitting(true);
     setActionError("");
     try {
+      let productId = activeProduct?.id;
       if (formMode === "edit" && activeProduct?.id !== undefined) {
-        await updateProduct(activeProduct.id, payload);
-        await reload();
+        await updateProduct(activeProduct.id, data);
       } else {
-        await createProduct(payload);
+        const created = await createProduct(data);
+        productId =
+          created?.id ??
+          created?._id ??
+          created?.productId ??
+          created?.product_id ??
+          productId;
         await goToPage(1);
       }
+
+      if (productId && (avatarFile || (galleryFiles && galleryFiles.length > 0))) {
+        try {
+          await uploadProductGallery({
+            productId,
+            avatarFile: avatarFile || undefined,
+            galleryFiles: galleryFiles || [],
+          });
+        } catch (uploadError) {
+          setActionError("Product saved, but images failed to upload.");
+        }
+      }
+
+      await reload();
       setFormOpen(false);
       setActiveProduct(null);
     } catch (e) {
@@ -268,7 +293,7 @@ export default function AdminProductsPage() {
                   onClick={handleCancel}
                   aria-label="Close form"
                 >
-                  ×
+                  x
                 </button>
               </div>
               <AdminProductForm
@@ -286,3 +311,4 @@ export default function AdminProductsPage() {
     </section>
   );
 }
+

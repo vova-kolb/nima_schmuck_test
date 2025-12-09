@@ -17,12 +17,46 @@
   gap: 12px;
 }
 
-.brand {
+.brandRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: auto;
+}
+
+.brandLabel {
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 13px;
   color: #f0d9d9;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.backButton {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #3b3b3b;
+  background: #2b2b2b;
+  color: #f6f3f3;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.backButton:hover,
+.backButton:focus-visible {
+  transform: translateY(-1px);
+  border-color: #4a4a4a;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
 }
 
 .content {

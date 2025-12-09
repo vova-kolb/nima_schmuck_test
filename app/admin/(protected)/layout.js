@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchAdminSession } from "@/lib/auth";
 import LogoutButton from "@/components/admin/LogoutButton";
@@ -42,13 +44,22 @@ export default function ProtectedAdminLayout({ children }) {
         <div className={styles.topBar}>
           <div className="container">
             <div className={styles.topBarInner}>
-              <span className={styles.brand}>Admin</span>
+              <div className={styles.brandRow}>
+                <Image
+                  src="/images/logo-sm.svg"
+                  alt="Nima Schmuck"
+                  width={120}
+                  height={36}
+                  className={styles.logo}
+                />
+                <span className={styles.brandLabel}>Admin Panel</span>
+              </div>
             </div>
           </div>
         </div>
         <div className={styles.content}>
           <div className="container">
-            <p>Checking session…</p>
+            <p>Checking session...</p>
           </div>
         </div>
       </div>
@@ -64,8 +75,22 @@ export default function ProtectedAdminLayout({ children }) {
       <div className={styles.topBar}>
         <div className="container">
           <div className={styles.topBarInner}>
-            <span className={styles.brand}>Admin</span>
-            <LogoutButton />
+            <div className={styles.brandRow}>
+              <Image
+                src="/images/logo-sm.svg"
+                alt="Nima Schmuck"
+                width={120}
+                height={36}
+                className={styles.logo}
+              />
+              <span className={styles.brandLabel}>Admin Panel</span>
+            </div>
+            <div className={styles.actions}>
+              <Link href="/" className={styles.backButton}>
+                Back to web
+              </Link>
+              <LogoutButton />
+            </div>
           </div>
         </div>
       </div>

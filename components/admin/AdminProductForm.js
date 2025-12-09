@@ -26,9 +26,12 @@ export default function AdminProductForm({
   onCancel,
   submitting,
   serverError,
+  onUploadChange,
 }) {
   const [formData, setFormData] = useState(DEFAULT_PRODUCT);
   const [localError, setLocalError] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [galleryFiles, setGalleryFiles] = useState([]);
 
   useEffect(() => {
     if (initialData) {
@@ -54,6 +57,8 @@ export default function AdminProductForm({
     } else {
       setFormData(DEFAULT_PRODUCT);
     }
+    setAvatarFile(null);
+    setGalleryFiles([]);
     setLocalError("");
   }, [initialData]);
 
@@ -63,13 +68,16 @@ export default function AdminProductForm({
     setFormData((prev) => ({ ...prev, [field]: nextValue }));
   };
 
-  const handleImagesChange = (event) => {
-    const value = event.target.value;
-    const items = value
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean);
-    setFormData((prev) => ({ ...prev, img: items }));
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0] || null;
+    setAvatarFile(file);
+    onUploadChange?.({ avatarFile: file, galleryFiles });
+  };
+
+  const handleGalleryChange = (event) => {
+    const files = Array.from(event.target.files || []);
+    setGalleryFiles(files);
+    onUploadChange?.({ avatarFile, galleryFiles: files });
   };
 
   const handleSubmit = async (event) => {
@@ -95,32 +103,15 @@ export default function AdminProductForm({
     }
 
     setLocalError("");
-    onSubmit?.(formData);
+    onSubmit?.({
+      data: formData,
+      avatarFile,
+      galleryFiles,
+    });
   };
-
-  const imageValue = Array.isArray(formData.img) ? formData.img.join(", ") : "";
 
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <div>
-          <p className={styles.kicker}>{mode === "edit" ? "Edit" : "Create"}</p>
-          <h3 className={styles.title}>
-            {mode === "edit" ? "Update product" : "Add a new product"}
-          </h3>
-        </div>
-        {onCancel && (
-          <button
-            type="button"
-            className={`${styles.button} ${styles.ghost}`}
-            onClick={onCancel}
-            disabled={submitting}
-          >
-            Cancel
-          </button>
-        )}
-      </div>
-
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.grid}>
           <label className={styles.field}>
@@ -249,15 +240,48 @@ export default function AdminProductForm({
           />
         </label>
 
-        <label className={styles.field}>
-          <span>Images (comma separated)</span>
-          <input
-            type="text"
-            value={imageValue}
-            onChange={handleImagesChange}
-            placeholder="/images/product.jpg, /images/second.jpg"
-          />
-        </label>
+        <div className={styles.uploadGrid}>
+          <div className={`${styles.field} ${styles.fileInput}`}>
+            <span>Avatar image</span>
+            <div className={styles.fileRow}>
+              <label className={styles.fileButton}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  disabled={submitting}
+                  className={styles.hiddenInput}
+                />
+                Choose avatar
+              </label>
+              <span className={styles.fileMeta}>
+                {avatarFile ? avatarFile.name : "No file chosen"}
+              </span>
+            </div>
+          </div>
+
+          <div className={`${styles.field} ${styles.fileInput}`}>
+            <span>Gallery images (max 8)</span>
+            <div className={styles.fileRow}>
+              <label className={styles.fileButton}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryChange}
+                  disabled={submitting}
+                  className={styles.hiddenInput}
+                />
+                Choose files
+              </label>
+              <span className={styles.fileMeta}>
+                {galleryFiles.length > 0
+                  ? `${galleryFiles.length} file${galleryFiles.length > 1 ? "s" : ""} selected`
+                  : "No files chosen"}
+              </span>
+            </div>
+          </div>
+        </div>
 
         {(localError || serverError) && (
           <div className={styles.error}>{localError || serverError}</div>

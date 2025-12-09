@@ -2,11 +2,27 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useCart } from '@/lib/hooks/useCart';
+import { fetchAdminSession } from '@/lib/auth';
 import styles from './Header.module.css';
 
 export default function Header() {
   const { totalCount } = useCart();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const check = async () => {
+      const { authenticated } = await fetchAdminSession();
+      if (!active) return;
+      setIsAdmin(Boolean(authenticated));
+    };
+    check();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <header className={styles.header}>
