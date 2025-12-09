@@ -10,13 +10,14 @@ import {
   updateProduct,
 } from "@/lib/api";
 import styles from "../../page.module.css";
-import { SKIP_ADMIN_AUTH } from "@/lib/api";
+import { shouldSkipAdminAuth } from "@/lib/api";
 
 const PAGE_SIZE = 10;
 const SORT_FIELD = "id";
 const SORT_ORDER = "desc";
 
 export default function AdminProductsPage() {
+  const skipAuth = shouldSkipAdminAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -86,7 +87,7 @@ export default function AdminProductsPage() {
   };
 
   const handleSave = async (payload) => {
-    if (SKIP_ADMIN_AUTH) {
+    if (skipAuth) {
       setActionError("Actions are disabled while auth is bypassed.");
       return;
     }
@@ -111,7 +112,7 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (product) => {
     if (!product?.id) return;
-    if (SKIP_ADMIN_AUTH) {
+    if (skipAuth) {
       setActionError("Actions are disabled while auth is bypassed.");
       return;
     }
@@ -145,7 +146,7 @@ export default function AdminProductsPage() {
               type="button"
               className={`${styles.button} ${styles.primary}`}
               onClick={openCreateForm}
-              disabled={submitting || SKIP_ADMIN_AUTH}
+              disabled={submitting || skipAuth}
             >
               Add Product
             </button>
@@ -171,7 +172,7 @@ export default function AdminProductsPage() {
             page={page}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            disableActions={submitting || SKIP_ADMIN_AUTH}
+            disableActions={submitting || skipAuth}
           />
 
           <div className={styles.formColumn}>
@@ -197,7 +198,7 @@ export default function AdminProductsPage() {
                   type="button"
                   className={`${styles.button} ${styles.primary}`}
                   onClick={openCreateForm}
-                  disabled={SKIP_ADMIN_AUTH}
+                  disabled={skipAuth}
                 >
                   Add Product
                 </button>

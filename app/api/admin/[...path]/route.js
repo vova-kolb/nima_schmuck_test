@@ -11,9 +11,10 @@ const FORBIDDEN_HEADERS = new Set([
   "accept-encoding",
 ]);
 
-async function proxy(req, { params }) {
-  const { path = [] } = params || {};
-  const targetPath = path.join("/");
+async function proxy(req, context) {
+  const resolved = (await context?.params) || {};
+  const pathSegments = Array.isArray(resolved.path) ? resolved.path : [];
+  const targetPath = pathSegments.join("/");
   const targetUrl = `${BACKEND_BASE}/admin/${targetPath}${req.nextUrl.search}`;
 
   const headers = new Headers();

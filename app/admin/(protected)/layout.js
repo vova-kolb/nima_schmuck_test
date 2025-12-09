@@ -1,12 +1,12 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { fetchAdminSession } from "@/lib/auth";
-import { SKIP_ADMIN_AUTH } from "@/lib/api";
+import { shouldSkipAdminAuth } from "@/lib/api";
 import LogoutButton from "@/components/admin/LogoutButton";
 import styles from "./layout.module.css";
 
 export default async function ProtectedAdminLayout({ children }) {
-  if (SKIP_ADMIN_AUTH) {
+  if (shouldSkipAdminAuth()) {
     return (
       <div className={styles.wrapper}>
         <div className={styles.topBar}>
@@ -22,7 +22,8 @@ export default async function ProtectedAdminLayout({ children }) {
     );
   }
 
-  const cookieHeader = cookies()
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
     .getAll()
     .map(({ name, value }) => `${name}=${value}`)
     .join("; ");
