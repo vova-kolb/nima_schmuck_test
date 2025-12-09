@@ -17,7 +17,14 @@ async function proxy(req) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
 
-  const targetUrl = `${BACKEND_BASE}/products${req.nextUrl.search}`;
+  if (!BACKEND_BASE) {
+    return NextResponse.json(
+      { error: "Backend base URL is not configured" },
+      { status: 500 }
+    );
+  }
+
+  const targetUrl = `${BACKEND_BASE}/api/products${req.nextUrl.search}`;
 
   const headers = new Headers();
   req.headers.forEach((value, key) => {

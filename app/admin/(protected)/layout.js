@@ -1,10 +1,27 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { fetchAdminSession } from "@/lib/auth";
+import { SKIP_ADMIN_AUTH } from "@/lib/api";
 import LogoutButton from "@/components/admin/LogoutButton";
 import styles from "./layout.module.css";
 
 export default async function ProtectedAdminLayout({ children }) {
+  if (SKIP_ADMIN_AUTH) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.topBar}>
+          <div className="container">
+            <div className={styles.topBarInner}>
+              <span className={styles.brand}>Admin (auth bypassed)</span>
+              <LogoutButton />
+            </div>
+          </div>
+        </div>
+        <div className={styles.content}>{children}</div>
+      </div>
+    );
+  }
+
   const cookieHeader = cookies()
     .getAll()
     .map(({ name, value }) => `${name}=${value}`)

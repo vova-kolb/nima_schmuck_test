@@ -17,8 +17,15 @@ async function proxy(req, { params }) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
 
+  if (!BACKEND_BASE) {
+    return NextResponse.json(
+      { error: "Backend base URL is not configured" },
+      { status: 500 }
+    );
+  }
+
   const safeId = encodeURIComponent(params?.id ?? "");
-  const targetUrl = `${BACKEND_BASE}/products/${safeId}${req.nextUrl.search}`;
+  const targetUrl = `${BACKEND_BASE}/api/products/${safeId}${req.nextUrl.search}`;
 
   const headers = new Headers();
   req.headers.forEach((value, key) => {

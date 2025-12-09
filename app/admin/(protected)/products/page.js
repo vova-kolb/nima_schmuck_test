@@ -6,10 +6,11 @@ import AdminProductTable from "@/components/admin/AdminProductTable";
 import {
   createProduct,
   deleteProduct,
-  fetchProducts,
+  fetchAdminProducts,
   updateProduct,
 } from "@/lib/api";
 import styles from "../../page.module.css";
+import { SKIP_ADMIN_AUTH } from "@/lib/api";
 
 const PAGE_SIZE = 10;
 const SORT_FIELD = "id";
@@ -32,7 +33,7 @@ export default function AdminProductsPage() {
     setError("");
     try {
       const { items, totalPages: apiPages, page: apiPage } =
-        await fetchProducts({
+        await fetchAdminProducts({
           page: nextPage,
           limit: PAGE_SIZE,
           sortBy: SORT_FIELD,
@@ -85,6 +86,11 @@ export default function AdminProductsPage() {
   };
 
   const handleSave = async (payload) => {
+    if (SKIP_ADMIN_AUTH) {
+      setActionError("Actions are disabled while auth is bypassed.");
+      return;
+    }
+
     setSubmitting(true);
     setActionError("");
     try {
@@ -105,6 +111,10 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (product) => {
     if (!product?.id) return;
+    if (SKIP_ADMIN_AUTH) {
+      setActionError("Actions are disabled while auth is bypassed.");
+      return;
+    }
     const confirmed = window.confirm(
       `Delete "${product.name || "product"}"? This cannot be undone.`
     );
@@ -135,7 +145,7 @@ export default function AdminProductsPage() {
               type="button"
               className={`${styles.button} ${styles.primary}`}
               onClick={openCreateForm}
-              disabled={submitting}
+              disabled={submitting || SKIP_ADMIN_AUTH}
             >
               Add Product
             </button>
@@ -161,7 +171,7 @@ export default function AdminProductsPage() {
             page={page}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            disableActions={submitting}
+            disableActions={submitting || SKIP_ADMIN_AUTH}
           />
 
           <div className={styles.formColumn}>
@@ -187,6 +197,7 @@ export default function AdminProductsPage() {
                   type="button"
                   className={`${styles.button} ${styles.primary}`}
                   onClick={openCreateForm}
+                  disabled={SKIP_ADMIN_AUTH}
                 >
                   Add Product
                 </button>
