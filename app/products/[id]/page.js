@@ -40,7 +40,12 @@ export default async function ProductPage({ params = {} }) {
   const availabilityStatus =
     product.availabilityStatus ?? product.availabilitystatus ?? "";
   const galleryId =
-    productGalleryId ?? product.gallery ?? product.id ?? productId;
+    product.productId ??
+    product.product_id ??
+    productGalleryId ??
+    product.gallery ??
+    product.id ??
+    productId;
 
   return (
     <section className={styles.section}>

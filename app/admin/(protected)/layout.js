@@ -1,34 +1,55 @@
-import { cookies } from "next/headers";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { fetchAdminSession } from "@/lib/auth";
 import LogoutButton from "@/components/admin/LogoutButton";
 import styles from "./layout.module.css";
 
-export default async function ProtectedAdminLayout({ children }) {
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join("; ");
-  const { authenticated } = await fetchAdminSession(cookieHeader);
+export default function ProtectedAdminLayout({ children }) {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
-  if (!authenticated) {
+  useEffect(() => {
+    let active = true;
+    const check = async () => {
+      const { authenticated: ok } = await fetchAdminSession();
+      if (!active) return;
+      if (ok) {
+        setAuthenticated(true);
+      } else {
+        router.replace("/admin/login");
+      }
+      setChecking(false);
+    };
+    check();
+    return () => {
+      active = false;
+    };
+  }, [router]);
+
+  if (checking) {
     return (
       <div className={styles.wrapper}>
         <div className={styles.topBar}>
           <div className="container">
             <div className={styles.topBarInner}>
               <span className={styles.brand}>Admin</span>
-              <LogoutButton />
             </div>
           </div>
         </div>
         <div className={styles.content}>
           <div className="container">
-            <p>Not authenticated. Please log in.</p>
+            <p>Checking session…</p>
           </div>
         </div>
       </div>
     );
+  }
+
+  if (!authenticated) {
+    return null;
   }
 
   return (

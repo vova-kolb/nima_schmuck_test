@@ -12,7 +12,20 @@ const FORBIDDEN_HEADERS = new Set([
   "cookie",
 ]);
 
-async function proxy(req, { params }) {
+const extractId = (req, params) => {
+  if (params?.id) return params.id;
+  const pathname = req?.nextUrl?.pathname || "";
+  const segments = pathname.split("/").filter(Boolean);
+  return segments[segments.length - 1];
+};
+
+async function proxy(req, context = {}) {
+  const awaitedParams = context?.params ? await context.params : {};
+  const id = extractId(req, awaitedParams);
+  if (!id) {
+    return NextResponse.json({ error: "Product id is required" }, { status: 400 });
+  }
+
   if (req.method && !["GET", "HEAD", "OPTIONS"].includes(req.method)) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -24,8 +37,9 @@ async function proxy(req, { params }) {
     );
   }
 
-  const safeId = encodeURIComponent(params?.id ?? "");
-  const targetUrl = `${BACKEND_BASE}/api/products/${safeId}${req.nextUrl.search}`;
+  const targetUrl = `${BACKEND_BASE}/api/products/${encodeURIComponent(id)}${
+    req.nextUrl.search || ""
+  }`;
 
   const headers = new Headers();
   req.headers.forEach((value, key) => {

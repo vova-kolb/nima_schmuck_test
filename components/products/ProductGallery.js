@@ -11,13 +11,13 @@ import styles from "./ProductGallery.module.css";
 
 const PLACEHOLDER = "/images/product.jpg";
 
-const buildSlides = (galleryId, rawImages = []) => {
-  const galleryImages = galleryId
+const buildSlides = (productId, rawImages = []) => {
+  const galleryImages = productId
     ? Array.from({ length: 4 }, (_, idx) =>
-        buildGalleryImageUrl(galleryId, idx)
+        buildGalleryImageUrl(productId, idx)
       )
     : [];
-  const avatar = buildGalleryAvatarUrl(galleryId);
+  const avatar = buildGalleryAvatarUrl(productId);
   const fallbackImages = Array.isArray(rawImages)
     ? rawImages
     : rawImages
