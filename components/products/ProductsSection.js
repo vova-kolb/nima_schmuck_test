@@ -67,6 +67,7 @@ export default function ProductsSection() {
         </div>
 
         <ProductFilters
+          className={styles.filterBar}
           searchTerm={searchTerm}
           onSearchChange={updateSearch}
           categories={categories}

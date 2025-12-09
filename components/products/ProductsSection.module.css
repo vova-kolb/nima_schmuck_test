@@ -64,6 +64,10 @@
   color: #ffffff;
 }
 
+.filterBar {
+  margin-bottom: clamp(16px, 4vw, 28px);
+}
+
 .status {
   text-align: center;
   padding: 18px 0;
