@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useCart } from "@/lib/hooks/useCart";
 import styles from "./ProductCard.module.css";
 
@@ -11,16 +12,21 @@ export default function ProductCard({ product }) {
   const { addItem } = useCart();
 
   const { img, name, category, materials, price, message, id } = product;
+  const placeholder = "/images/product.jpg";
 
-  const rawSrc =
-    Array.isArray(img) && img.length > 0 ? img[0] : "/images/product.jpg";
+  const rawSrc = Array.isArray(img) && img.length > 0 ? img[0] : placeholder;
 
   const imageSrc = rawSrc.replace(/^\.?\/?public/, "");
-  const normalizedSrc = imageSrc
+  const isAbsolute = /^https?:\/\//i.test(imageSrc);
+  const normalizedSrc = isAbsolute
+    ? imageSrc
+    : imageSrc
     ? imageSrc.startsWith("/")
       ? imageSrc
       : `/${imageSrc}`
-    : "/images/product.jpg";
+    : placeholder;
+
+  const [displaySrc, setDisplaySrc] = useState(normalizedSrc || placeholder);
 
   const displayPrice = price ? `${price} CHF` : "";
   const displayName = name || "Jewelry piece";
@@ -42,12 +48,15 @@ export default function ProductCard({ product }) {
       <Link href={href} className={styles.mediaLink}>
         <div className={styles.media}>
           <Image
-            src={normalizedSrc}
+            src={displaySrc}
             alt={displayName}
             fill
             className={styles.img}
             sizes="(max-width: 768px) 50vw, 25vw"
             priority={false}
+            onError={() => {
+              setDisplaySrc(placeholder);
+            }}
           />
         </div>
       </Link>

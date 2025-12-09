@@ -6,18 +6,16 @@ import AdminProductTable from "@/components/admin/AdminProductTable";
 import {
   createProduct,
   deleteProduct,
-  fetchAdminProducts,
+  fetchProducts,
   updateProduct,
 } from "@/lib/api";
 import styles from "../../page.module.css";
-import { shouldSkipAdminAuth } from "@/lib/api";
 
 const PAGE_SIZE = 10;
 const SORT_FIELD = "id";
 const SORT_ORDER = "desc";
 
 export default function AdminProductsPage() {
-  const skipAuth = shouldSkipAdminAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,7 +32,7 @@ export default function AdminProductsPage() {
     setError("");
     try {
       const { items, totalPages: apiPages, page: apiPage } =
-        await fetchAdminProducts({
+        await fetchProducts({
           page: nextPage,
           limit: PAGE_SIZE,
           sortBy: SORT_FIELD,
@@ -87,11 +85,6 @@ export default function AdminProductsPage() {
   };
 
   const handleSave = async (payload) => {
-    if (skipAuth) {
-      setActionError("Actions are disabled while auth is bypassed.");
-      return;
-    }
-
     setSubmitting(true);
     setActionError("");
     try {
@@ -112,10 +105,6 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (product) => {
     if (!product?.id) return;
-    if (skipAuth) {
-      setActionError("Actions are disabled while auth is bypassed.");
-      return;
-    }
     const confirmed = window.confirm(
       `Delete "${product.name || "product"}"? This cannot be undone.`
     );
@@ -146,7 +135,7 @@ export default function AdminProductsPage() {
               type="button"
               className={`${styles.button} ${styles.primary}`}
               onClick={openCreateForm}
-              disabled={submitting || skipAuth}
+              disabled={submitting}
             >
               Add Product
             </button>
@@ -172,7 +161,7 @@ export default function AdminProductsPage() {
             page={page}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            disableActions={submitting || skipAuth}
+            disableActions={submitting}
           />
 
           <div className={styles.formColumn}>
@@ -198,7 +187,6 @@ export default function AdminProductsPage() {
                   type="button"
                   className={`${styles.button} ${styles.primary}`}
                   onClick={openCreateForm}
-                  disabled={skipAuth}
                 >
                   Add Product
                 </button>

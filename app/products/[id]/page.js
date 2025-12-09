@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api";
 import ProductActions from "@/components/products/ProductActions";
+import ProductGallery from "@/components/products/ProductGallery";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -28,16 +28,19 @@ export default async function ProductPage({ params = {} }) {
     price,
     discount,
     availability,
-    availabilityStatus,
     stone,
     typeOfMessage,
     message,
     description,
     featured,
     img = [],
+    galleryId: productGalleryId,
   } = product;
 
-  const mainImage = img[0] || "/images/product.jpg";
+  const availabilityStatus =
+    product.availabilityStatus ?? product.availabilitystatus ?? "";
+  const galleryId =
+    productGalleryId ?? product.gallery ?? product.id ?? productId;
 
   return (
     <section className={styles.section}>
@@ -48,32 +51,7 @@ export default async function ProductPage({ params = {} }) {
 
         <div className={styles.layout}>
           <div className={styles.media}>
-            <div className={styles.imageWrapper}>
-              <Image
-                src={mainImage}
-                alt={name || "Product image"}
-                fill
-                className={styles.image}
-                sizes="(max-width: 900px) 90vw, 520px"
-                priority
-              />
-            </div>
-
-            {img.length > 1 && (
-              <div className={styles.thumbRow}>
-                {img.slice(1).map((src, idx) => (
-                  <div key={src + idx} className={styles.thumb}>
-                    <Image
-                      src={src}
-                      alt={`${name || "Product"} thumbnail ${idx + 1}`}
-                      fill
-                      className={styles.image}
-                      sizes="120px"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <ProductGallery name={name} galleryId={galleryId} images={img} />
           </div>
 
           <div className={styles.info}>

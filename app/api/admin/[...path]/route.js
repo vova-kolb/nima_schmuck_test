@@ -11,6 +11,26 @@ const FORBIDDEN_HEADERS = new Set([
   "accept-encoding",
 ]);
 
+const rewriteCookie = (cookie) => {
+  if (!cookie) return cookie;
+  let rewritten = cookie;
+
+  // Drop domain to keep it host-only for the current origin
+  rewritten = rewritten.replace(/;\s*Domain=[^;]*/gi, "");
+  // Allow HTTP during local dev
+  rewritten = rewritten.replace(/;\s*Secure/gi, "");
+  // Normalize SameSite to Lax for browsers that reject None without Secure
+  rewritten = rewritten.replace(/;\s*SameSite=[^;]*/gi, "");
+  rewritten += "; SameSite=Lax";
+
+  // Ensure the path is set
+  if (!/;\s*Path=/i.test(rewritten)) {
+    rewritten += "; Path=/";
+  }
+
+  return rewritten;
+};
+
 async function proxy(req, context) {
   const resolved = (await context?.params) || {};
   const pathSegments = Array.isArray(resolved.path) ? resolved.path : [];
@@ -53,9 +73,11 @@ async function proxy(req, context) {
     backendResponse.headers.get("set-cookie");
 
   if (Array.isArray(setCookies)) {
-    setCookies.forEach((cookie) => response.headers.append("set-cookie", cookie));
+    setCookies.forEach((cookie) =>
+      response.headers.append("set-cookie", rewriteCookie(cookie))
+    );
   } else if (setCookies) {
-    response.headers.append("set-cookie", setCookies);
+    response.headers.append("set-cookie", rewriteCookie(setCookies));
   }
 
   return response;
