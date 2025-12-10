@@ -226,20 +226,13 @@ export default function AdminProductsPage() {
             searchPlaceholder={`Search ${currentTitle.toLowerCase()}...`}
             searchTerm={searchTerm}
             onSearchChange={updateSearch}
-            categories={categoriesForTab}
-            selectedCategory={activeTab === "workshops" ? "workshop" : selectedCategory}
-            onCategoryChange={handleCategorySelect}
-            categoryPlaceholder="All categories"
-            materials={materials}
-            selectedMaterial={selectedMaterial}
-            onMaterialChange={selectMaterial}
-            materialPlaceholder="All materials"
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={selectSort}
             sortOptions={SORT_OPTIONS}
             showLabels={false}
-            showMaterial={materials.length > 0}
+            showMaterial={activeTab !== "workshops" && materials.length > 0}
+            showCategory={activeTab !== "workshops"}
           />
 
           <div className={styles.toolbarActions}>
@@ -249,7 +242,7 @@ export default function AdminProductsPage() {
               onClick={openCreateForm}
               disabled={submitting}
             >
-              + Add Product
+              {activeTab === "workshops" ? "+ Add Workshop" : "+ Add Product"}
             </button>
           </div>
         </div>
@@ -268,6 +261,7 @@ export default function AdminProductsPage() {
           disableActions={submitting}
           title={`All ${currentTitle}`}
           subtitle={perPageLabel}
+          variant={activeTab === "workshops" ? "workshop" : "product"}
         />
 
         {formOpen && (
@@ -284,7 +278,13 @@ export default function AdminProductsPage() {
                     {formMode === "edit" ? "Edit" : "Create"}
                   </p>
                   <h3 className={styles.modalTitle}>
-                    {formMode === "edit" ? "Edit product" : "Add a new product"}
+                    {formMode === "edit"
+                      ? activeTab === "workshops"
+                        ? "Edit workshop"
+                        : "Edit product"
+                      : activeTab === "workshops"
+                      ? "Add a new workshop"
+                      : "Add a new product"}
                   </h3>
                 </div>
                 <button
@@ -303,6 +303,7 @@ export default function AdminProductsPage() {
                 onCancel={handleCancel}
                 submitting={submitting}
                 serverError={actionError}
+                variant={activeTab === "workshops" ? "workshop" : "product"}
               />
             </div>
           </div>

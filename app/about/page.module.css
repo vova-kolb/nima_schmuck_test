@@ -1,0 +1,147 @@
+.main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  background: var(--color-background-main, #ffffff);
+}
+
+.storySection {
+  width: 100%;
+  padding: 12px 0 0;
+}
+
+.storyGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 42px;
+  align-items: flex-start;
+}
+
+.storyText {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d18a8a;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--color-text-primary, #171717);
+  line-height: 1.2;
+}
+
+.copy {
+  display: grid;
+  gap: 14px;
+  color: var(--color-text-secondary, #525252);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.copy strong {
+  color: var(--color-text-primary, #171717);
+}
+
+.storyImageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f6f1ee;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.08);
+}
+
+.storyImage {
+  object-fit: cover;
+}
+
+.valuesGrid {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+.valueCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px 18px 20px;
+  border: 1px solid #f0e5e0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+}
+
+.iconBadge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #e7d9d2;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.04);
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.valueTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary, #171717);
+}
+
+.valueDescription {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary, #525252);
+}
+
+@media (max-width: 1080px) {
+  .storyGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .storyImageWrapper {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .valuesGrid {
+    margin-top: 22px;
+  }
+}
+
+@media (max-width: 720px) {
+  .main {
+    gap: 38px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .copy {
+    font-size: 15px;
+    gap: 12px;
+  }
+}

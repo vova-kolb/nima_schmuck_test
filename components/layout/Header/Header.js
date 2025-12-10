@@ -48,8 +48,8 @@ export default function Header() {
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link href="/collections" className={styles.navLink}>
-                Collections
+              <Link href="/catalog" className={styles.navLink}>
+                Catalog
               </Link>
             </li>
             <li className={styles.navItem}>
@@ -68,7 +68,7 @@ export default function Header() {
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link href="/contact" className={styles.navLink}>
+              <Link href="/contacts" className={styles.navLink}>
                 Contact
               </Link>
             </li>

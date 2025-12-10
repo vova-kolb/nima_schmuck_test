@@ -22,9 +22,7 @@ const resolveImageSrc = (product) => {
   const avatar = buildGalleryAvatarUrl(key);
   const raw = Array.isArray(product?.img) ? product.img[0] : product?.img;
   const candidates = [avatar, raw, fallbackImg];
-  return candidates
-    .map((candidate) => normalizeImageSrc(candidate))
-    .find(Boolean);
+  return candidates.map((candidate) => normalizeImageSrc(candidate)).find(Boolean);
 };
 
 const ProductThumb = ({ product, name }) => {
@@ -44,36 +42,51 @@ const ProductThumb = ({ product, name }) => {
 };
 
 const deriveStatus = (product) => {
-  const rawStatus = product.availabilitystatus || product.availability || "";
+  // Prefer explicit availability status fields; only fall back to availability if it's not numeric
+  const rawStatus =
+    product.availabilitystatus ??
+    product.availabilityStatus ??
+    product.availability_status ??
+    (() => {
+      const raw = product.availability;
+      if (raw === undefined || raw === null || raw === "") return "";
+      const isNumeric = !Number.isNaN(Number(raw));
+      return isNumeric ? "" : raw;
+    })() ??
+    "";
+
   const normalized = String(rawStatus).trim().toLowerCase();
 
-  if (!normalized) return { label: "Unknown", tone: "muted" };
+  if (!normalized) return { label: "no status", tone: "muted" };
+  if (normalized.includes("request")) {
+    return { label: rawStatus || "On Request", tone: "warning" };
+  }
   if (normalized.includes("low")) {
     return { label: rawStatus || "Low stock", tone: "warning" };
   }
   if (normalized.includes("not") || normalized.includes("out")) {
-    return { label: rawStatus || "Out of stock", tone: "danger" };
+    return { label: rawStatus || "Not available", tone: "danger" };
   }
   return { label: rawStatus || "In stock", tone: "success" };
 };
 
-const formatPrice = (price) => {
-  if (price === undefined || price === null || price === "") return "¢?\"";
-  return `CHF ${price}`;
+const formatPrice = (price, discount) => {
+  if (price === undefined || price === null || price === "") return "—";
+  const priceLabel = `CHF ${price}`;
+  const discountValue = Number.parseFloat(discount);
+  const hasDiscount = Number.isFinite(discountValue) && discountValue > 0;
+  return hasDiscount ? `${priceLabel} (-${discountValue}%)` : priceLabel;
+};
+
+const formatQuantity = (availability) => {
+  if (availability === undefined || availability === null || availability === "") return "—";
+  return availability;
 };
 
 const PencilIcon = () => (
   <svg viewBox="0 0 20 20" aria-hidden className={styles.icon}>
-    <path
-      d="M3 13.5 12.5 4l3.5 3.5L6.5 17H3v-3.5Z"
-      fill="currentColor"
-    />
-    <path
-      d="m11.5 5 3.5 3.5"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
+    <path d="M3 13.5 12.5 4l3.5 3.5L6.5 17H3v-3.5Z" fill="currentColor" />
+    <path d="m11.5 5 3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
@@ -103,28 +116,47 @@ export default function AdminProductTable({
   onPageChange,
   title = "All Products",
   subtitle,
+  variant = "product",
 }) {
+  const isWorkshop = variant === "workshop";
+  const tableClass = classNames(styles.table, isWorkshop && styles.workshop);
+
   const renderRow = (product) => {
-    const { id, name, category, price, img, materials } = product;
+    const { id, name, category, price, materials, availability } = product;
     const status = deriveStatus(product);
+    const dateValue =
+      product.date ??
+      product.workshopDate ??
+      product.workshopdate ??
+      product.dateTime ??
+      product.datetime ??
+      product.scheduledDate ??
+      "";
+    const duration =
+      product.duration ??
+      product.durationHours ??
+      product.durationhours ??
+      product.length ??
+      product.time ??
+      "";
 
     return (
-      <div key={id ?? name} className={styles.row}>
+      <div key={id ?? name} className={classNames(styles.row, isWorkshop && styles.workshopRow)}>
         <div className={styles.productCell}>
           <div className={styles.thumb}>
             <ProductThumb product={product} name={name} />
           </div>
           <div className={styles.productText}>
             <p className={styles.name}>{name || "Untitled"}</p>
-            <p className={styles.subtle}>{materials || "¢?\""}</p>
+            {!isWorkshop && <p className={styles.subtle}>{materials || "—"}</p>}
           </div>
         </div>
-        <div className={styles.cell}>{category || "¢?\""}</div>
-        <div className={styles.cell}>{formatPrice(price)}</div>
+        <div className={styles.cell}>{isWorkshop ? dateValue || "—" : category || "—"}</div>
+        {isWorkshop && <div className={styles.cell}>{duration || "—"}</div>}
+        <div className={styles.cell}>{formatPrice(price, product.discount)}</div>
+        {!isWorkshop && <div className={styles.cell}>{formatQuantity(availability)}</div>}
         <div className={styles.cell}>
-          <span className={classNames(styles.status, styles[status.tone])}>
-            {status.label}
-          </span>
+          <span className={classNames(styles.status, styles[status.tone])}>{status.label}</span>
         </div>
         <div className={classNames(styles.cell, styles.actionsCell)}>
           <button
@@ -150,9 +182,7 @@ export default function AdminProductTable({
     );
   };
 
-  const infoLine =
-    subtitle ||
-    (total ? `${total} total ${total === 1 ? "product" : "products"}` : "");
+  const infoLine = subtitle || (total ? `${total} total ${total === 1 ? "product" : "products"}` : "");
 
   return (
     <div className={styles.panel}>
@@ -179,11 +209,13 @@ export default function AdminProductTable({
       {error && <div className={styles.error}>{error}</div>}
 
       {!loading && !error && (
-        <div className={styles.table}>
-          <div className={styles.head}>
-            <span>Product</span>
-            <span>Category</span>
+        <div className={tableClass}>
+          <div className={classNames(styles.head, isWorkshop && styles.workshopHead)}>
+            <span>{isWorkshop ? "Workshop" : "Product"}</span>
+            <span>{isWorkshop ? "Date" : "Category"}</span>
+            {isWorkshop && <span>Duration</span>}
             <span>Price</span>
+            {!isWorkshop && <span>Quantity</span>}
             <span>Status</span>
             <span className={styles.alignRight}>Actions</span>
           </div>

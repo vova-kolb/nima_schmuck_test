@@ -65,8 +65,8 @@ export default function Footer() {
               <p className={styles.columnTitle}>Quick Links</p>
               <ul className={styles.linkList}>
                 <li>
-                  <Link className={styles.link} href="/collections">
-                    Collections
+                  <Link className={styles.link} href="/catalog">
+                    Catalog
                   </Link>
                 </li>
                 <li>

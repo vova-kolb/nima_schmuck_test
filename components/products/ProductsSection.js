@@ -5,7 +5,7 @@ import ProductGrid from './ProductGrid';
 import ProductFilters from './ProductFilters';
 import styles from './ProductsSection.module.css';
 
-export default function ProductsSection() {
+export default function ProductsSection({ pageSize } = {}) {
   const {
     products,
     categories,
@@ -25,7 +25,7 @@ export default function ProductsSection() {
     prevPage,
     updateSearch,
     selectSort,
-  } = useProducts();
+  } = useProducts({ pageSize });
   const sortOptions = [
     { label: 'Default', value: '' },
     { label: 'Price: Low to High', value: 'price:asc' },

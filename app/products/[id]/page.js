@@ -37,6 +37,9 @@ export default async function ProductPage({ params = {} }) {
     galleryId: productGalleryId,
   } = product;
 
+  const discountValue = Number.parseFloat(discount);
+  const hasDiscount = Number.isFinite(discountValue) && discountValue > 0;
+
   const availabilityStatus =
     product.availabilityStatus ?? product.availabilitystatus ?? "";
   const galleryId =
@@ -69,8 +72,8 @@ export default async function ProductPage({ params = {} }) {
               {price !== undefined && (
                 <span className={styles.price}>{price} CHF</span>
               )}
-              {discount && (
-                <span className={styles.discount}>-{discount}%</span>
+              {hasDiscount && (
+                <span className={styles.discount}>-{discountValue}%</span>
               )}
             </div>
 

@@ -86,6 +86,14 @@ export default function ProtectedAdminLayout({ children }) {
               <span className={styles.brandLabel}>Admin Panel</span>
             </div>
             <div className={styles.actions}>
+              <div className={styles.navLinks}>
+                <Link href="/admin/products" className={styles.navLink}>
+                  Products
+                </Link>
+                <Link href="/admin/hero" className={styles.navLink}>
+                  Hero
+                </Link>
+              </div>
               <Link href="/" className={styles.backButton}>
                 Back to web
               </Link>

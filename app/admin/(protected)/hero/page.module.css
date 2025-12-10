@@ -33,59 +33,132 @@
   max-width: 760px;
 }
 
-.tabs {
+.headerActions {
   display: inline-flex;
-  background: #e9edf3;
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid #d9dde5;
-  gap: 6px;
-}
-
-.tabButton {
-  border: none;
-  background: transparent;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  color: #4a5568;
-  cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, transform 120ms ease;
-}
-
-.tabButton:hover {
-  transform: translateY(-1px);
-  background: #dfe5ee;
-}
-
-.activeTab {
-  background: #1f3b57;
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.16);
-}
-
-.toolbar {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #ffffff;
-  padding: 12px;
-  border-radius: 14px;
-  border: 1px solid #e4e7ec;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.06);
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-.filters {
-  flex: 1;
-  min-width: 280px;
+.panel {
+  background: #ffffff;
+  border: 1px solid #e4e7ec;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.06);
+  padding: 14px;
+  margin-top: 12px;
 }
 
-.toolbarActions {
+.panelHeader {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.meta {
+  margin: 2px 0 0;
+  color: #6a7280;
+}
+
+.table {
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.head,
+.row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 0.8fr 1.2fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.head {
+  background: #e9edf3;
+  padding: 10px 12px;
+  font-weight: 800;
+  color: #1f2933;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  padding: 12px;
+  border-top: 1px solid #e4e7ec;
+  background: #ffffff;
+}
+
+.row:nth-child(odd) {
+  background: #fdfefe;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: #1f2933;
+}
+
+.name {
+  margin: 0;
+  font-weight: 800;
+}
+
+.subtle {
+  margin: 0;
+  color: #6a7280;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e9edf3;
+  color: #1f3b57;
+  font-weight: 800;
+  border: 1px solid #d7deea;
+}
+
+.actionsCell {
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+.notice {
+  padding: 12px;
+  background: #eef2f7;
+  border-radius: 10px;
+  color: #1f2933;
+  border: 1px solid #d7deea;
+}
+
+.error {
+  background: #fff2f2;
+  color: #b42318;
+  border: 1px solid #f1b3ae;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.empty {
+  padding: 16px;
+  text-align: center;
+  color: #6a7280;
 }
 
 .button {
@@ -93,10 +166,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid transparent;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
@@ -121,8 +194,39 @@
   border-color: #274a6e;
 }
 
-.formShell {
-  display: none;
+.secondary {
+  background: #f5f7fa;
+  border-color: #dce1e8;
+  color: #1f2933;
+}
+
+.secondary:hover,
+.secondary:focus-visible {
+  background: #e9edf3;
+  border-color: #cfd6df;
+}
+
+.danger {
+  background: #fff2f2;
+  border-color: #f1b3ae;
+  color: #b42318;
+}
+
+.danger:hover,
+.danger:focus-visible {
+  background: #ffe3e3;
+  border-color: #f0a59e;
+}
+
+.ghost {
+  background: transparent;
+  border-color: #dce1e8;
+  color: #1f2933;
+}
+
+.ghost:hover,
+.ghost:focus-visible {
+  background: #f5f7fa;
 }
 
 .modalOverlay {
@@ -142,7 +246,7 @@
   border: 1px solid #e4e7ec;
   border-radius: 16px;
   box-shadow: 0 18px 38px rgba(17, 24, 39, 0.16);
-  width: min(920px, 100%);
+  width: min(720px, 100%);
   margin-top: 24px;
   padding: 16px;
   animation: slideUp 180ms ease;
@@ -210,21 +314,12 @@
     align-items: flex-start;
   }
 
-  .tabs {
-    width: 100%;
+  .head,
+  .row {
+    grid-template-columns: 1.4fr 1fr 1fr 0.8fr 1.2fr;
   }
 
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .toolbarActions {
-    width: 100%;
+  .actionsCell {
     justify-content: flex-start;
-  }
-
-  .filters {
-    width: 100%;
   }
 }

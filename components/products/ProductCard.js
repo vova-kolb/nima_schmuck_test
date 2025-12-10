@@ -11,7 +11,7 @@ export default function ProductCard({ product }) {
   const router = useRouter();
   const { addItem } = useCart();
 
-  const { img, name, category, materials, price, message, id } = product;
+  const { img, name, category, materials, price, message, id, discount } = product;
   const placeholder = "/images/product.jpg";
 
   const rawSrc = Array.isArray(img) && img.length > 0 ? img[0] : placeholder;
@@ -29,6 +29,8 @@ export default function ProductCard({ product }) {
   const [displaySrc, setDisplaySrc] = useState(normalizedSrc || placeholder);
 
   const displayPrice = price ? `${price} CHF` : "";
+  const discountValue = Number.parseFloat(discount);
+  const hasDiscount = Number.isFinite(discountValue) && discountValue > 0;
   const displayName = name || "Jewelry piece";
   const href = id ? `/products/${encodeURIComponent(id)}` : "#";
 
@@ -64,7 +66,12 @@ export default function ProductCard({ product }) {
       <div className={styles.info}>
         <div className={styles.headerRow}>
           {category && <p className={styles.category}>{category}</p>}
-          {displayPrice && <p className={styles.price}>{displayPrice}</p>}
+          {(displayPrice || hasDiscount) && (
+            <div className={styles.priceGroup}>
+              {displayPrice && <p className={styles.price}>{displayPrice}</p>}
+              {hasDiscount && <p className={styles.discount}>-{discountValue}%</p>}
+            </div>
+          )}
         </div>
         <Link href={href} className={styles.titleLink}>
           <h3 className={styles.title}>{displayName}</h3>

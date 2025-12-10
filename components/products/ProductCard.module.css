@@ -86,6 +86,20 @@
   white-space: nowrap;
 }
 
+.priceGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.discount {
+  margin: 0;
+  color: #7c2330;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .actions {
   display: flex;
   gap: 10px;

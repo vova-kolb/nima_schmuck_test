@@ -41,6 +41,31 @@
   gap: 10px;
 }
 
+.navLinks {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: #2b2b2b;
+  border: 1px solid #3b3b3b;
+}
+
+.navLink {
+  color: #f6f3f3;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.navLink:hover,
+.navLink:focus-visible {
+  background: #3b3b3b;
+  color: #ffffff;
+}
+
 .backButton {
   padding: 8px 12px;
   border-radius: 10px;

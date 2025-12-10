@@ -55,10 +55,36 @@ async function proxy(req, context = {}) {
   });
 
   const responseText = await backendResponse.text();
-  const contentType =
-    backendResponse.headers.get("content-type") || "application/json";
+  const contentType = backendResponse.headers.get("content-type") || "application/json";
 
-  return new NextResponse(responseText, {
+  // Try to merge availabilitystatus from list endpoint if missing in detail.
+  let finalText = responseText;
+  try {
+    const parsed = JSON.parse(responseText);
+    const hasStatus = parsed && typeof parsed === "object" && parsed.availabilitystatus !== undefined;
+    if (!hasStatus && id) {
+      const listRes = await fetch(`${BACKEND_BASE}/api/products?page=1&limit=200`, {
+        method: "GET",
+        headers,
+        redirect: "manual",
+      });
+      if (listRes.ok) {
+        const listJson = await listRes.json();
+        const match =
+          (Array.isArray(listJson?.items) ? listJson.items : []).find(
+            (item) => String(item?.id ?? item?._id ?? item?.productId ?? item?.product_id) === String(id)
+          ) || null;
+        if (match && match.availabilitystatus !== undefined) {
+          parsed.availabilitystatus = match.availabilitystatus;
+          finalText = JSON.stringify(parsed);
+        }
+      }
+    }
+  } catch (e) {
+    // swallow parse errors and return original text
+  }
+
+  return new NextResponse(finalText, {
     status: backendResponse.status,
     statusText: backendResponse.statusText,
     headers: {
