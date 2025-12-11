@@ -91,24 +91,14 @@ export default function Header() {
           </button>
 
           <Link href="/cart" className={`${styles.iconButton} ${styles.cartButton}`} aria-label="Open cart">
-            <svg
+            <Image
+              src="/images/cart-icon.svg"
+              alt="Cart icon"
+              width={36}
+              height={36}
               className={styles.cartIcon}
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                d="M7 6h-2l2.4 9h9.2l2.4-9h-11.6zm0 0l-1-3h-3"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="9.5" cy="20" r="1.25" />
-              <circle cx="15.5" cy="20" r="1.25" />
-            </svg>
+              priority={false}
+            />
             {totalCount > 0 && (
               <span className={styles.cartBadge} aria-label={`${totalCount} items in cart`}>
                 {totalCount}

@@ -29,8 +29,6 @@ const HERO_VARIANTS = {
   },
 };
 
-const DEFAULT_HERO = HERO_VARIANTS.home;
-
 const normalizePath = (value) => {
   if (!value || value === "#") return "/";
   let next = String(value).trim();
@@ -66,13 +64,14 @@ const deriveTitle = (hero, fallbackTitle) => {
 };
 
 export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
-  const fallback = useMemo(
-    () => HERO_VARIANTS[pageKey] || DEFAULT_HERO,
-    [pageKey]
-  );
-  const [heroContent, setHeroContent] = useState(fallback);
+  const fallback = useMemo(() => HERO_VARIANTS[pageKey] || HERO_VARIANTS.home, [pageKey]);
+  const [heroContent, setHeroContent] = useState({
+    image: null,
+    title: fallback.title,
+  });
 
   useEffect(() => {
+    setHeroContent({ image: null, title: fallback.title });
     if (!showHeroImage) return undefined;
 
     let active = true;
@@ -86,7 +85,12 @@ export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
         );
         const heroMatch = match || heroes[0];
         if (!heroMatch) {
-          if (active) setHeroContent(fallback);
+          if (active) {
+            setHeroContent({
+              image: fallback.image,
+              title: fallback.title,
+            });
+          }
           return;
         }
 
@@ -106,7 +110,12 @@ export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
           });
         }
       } catch (e) {
-        if (active) setHeroContent(fallback);
+        if (active) {
+          setHeroContent({
+            image: fallback.image,
+            title: fallback.title,
+          });
+        }
       }
     };
 
@@ -131,7 +140,7 @@ export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
         </div>
       </section>
 
-      {showHeroImage && (
+      {showHeroImage && heroContent.image?.src && (
         <section className={styles.heroSection} aria-labelledby="hero-heading">
           <div className={styles.heroWrapper}>
             <div className={styles.heroImageWrapper}>
@@ -139,7 +148,7 @@ export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
                 src={heroContent.image.src}
                 alt={heroContent.image.alt}
                 fill
-                sizes="100vw"
+                sizes="(min-width: 1500px) 1440px, calc(100vw - 30px)"
                 className={styles.heroImage}
                 priority
               />

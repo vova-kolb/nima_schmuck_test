@@ -1,15 +1,15 @@
 .filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 12px;
+  gap: clamp(16px, 2.2vw, 26px);
   align-items: end;
 }
 
 .card {
-  padding: clamp(12px, 3vw, 16px);
+  /* padding: clamp(12px, 3vw, 16px);
   border-radius: 12px;
   background: var(--color-primary);
-  border: 1px solid #e4e4e4;
+  border: 1px solid #e4e4e4; */
 }
 
 .toolbar {
@@ -32,15 +32,16 @@
   letter-spacing: 0.05em;
   color: #857f7c;
   text-transform: uppercase;
+  display: none;
 }
 
 .input {
   width: 100%;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: 30px;
   border: 1px solid #d9d9d9;
-  background: #f9f9f9;
-  color: #4a4441;
+  background: var(--color-primary);
+  color: var(--color-text-secondary);
   outline: none;
   font-size: 0.95rem;
   cursor: pointer;

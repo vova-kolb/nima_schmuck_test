@@ -209,11 +209,9 @@ export default function EditHeroPage({ params }) {
               </div>
 
               <div className={styles.card}>
-                <div className={styles.cardHeader}>Hero images</div>
+              <div className={styles.cardHeader}>Hero images</div>
                 <p className={styles.helper}>
-                  Upload up to 3 hero images. Existing images are fetched from
-                  {" "}
-                  `/img-upload/api/heroimg/{hero.id}/:idx`.
+                  Upload up to 3 hero images.
                 </p>
 
                 {uploadError && <div className={styles.error}>{uploadError}</div>}

@@ -5,9 +5,12 @@ export default function ProductGrid({ products = [] }) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.grid}>
-        {products.map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
+        {products.map((p, index) => {
+          const baseKey =
+            p.id ?? p.productId ?? p._id ?? p.galleryId ?? p.name ?? "product";
+          const key = `${String(baseKey)}-${index}`;
+          return <ProductCard key={key} product={p} />;
+        })}
       </div>
     </div>
   );

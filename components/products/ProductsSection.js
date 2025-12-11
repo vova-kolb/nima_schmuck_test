@@ -6,6 +6,7 @@ import ProductFilters from './ProductFilters';
 import styles from './ProductsSection.module.css';
 
 export default function ProductsSection({ pageSize } = {}) {
+  const normalize = (value) => String(value || '').toLowerCase().trim();
   const {
     products,
     categories,
@@ -26,6 +27,24 @@ export default function ProductsSection({ pageSize } = {}) {
     updateSearch,
     selectSort,
   } = useProducts({ pageSize, hideUnavailable: true });
+
+  const filteredProducts = products.filter(
+    (item) => normalize(item.category) !== 'workshop'
+  );
+  const filteredCategories = categories.filter(
+    (cat) => normalize(cat) !== 'workshop'
+  );
+  const safeSelectedCategory =
+    normalize(selectedCategory) === 'workshop' ? '' : selectedCategory;
+
+  const handleCategoryChange = (value) => {
+    if (normalize(value) === 'workshop') {
+      selectCategory('');
+      return;
+    }
+    selectCategory(value);
+  };
+
   const sortOptions = [
     { label: 'Default', value: '' },
     { label: 'Price: Low to High', value: 'price:asc' },
@@ -70,9 +89,9 @@ export default function ProductsSection({ pageSize } = {}) {
           className={styles.filterBar}
           searchTerm={searchTerm}
           onSearchChange={updateSearch}
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={selectCategory}
+          categories={filteredCategories}
+          selectedCategory={safeSelectedCategory}
+          onCategoryChange={handleCategoryChange}
           materials={materials}
           selectedMaterial={selectedMaterial}
           onMaterialChange={selectMaterial}
@@ -85,7 +104,7 @@ export default function ProductsSection({ pageSize } = {}) {
         {loading && <p className={styles.status}>Loading...</p>}
         {error && <p className={`${styles.status} ${styles.error}`}>{error}</p>}
 
-        {!loading && !error && <ProductGrid products={products} />}
+        {!loading && !error && <ProductGrid products={filteredProducts} />}
 
         {!loading && !error && totalPages > 1 && (
           <div className={styles.pagination}>

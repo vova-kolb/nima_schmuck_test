@@ -15,6 +15,7 @@ export default function Footer() {
               alt="Nima Schmuck"
               width={200}
               height={72}
+              sizes="200px"
               className={styles.logo}
             />
             <p className={styles.tagline}>
