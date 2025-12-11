@@ -5,12 +5,6 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import styles from "./WorkshopsList.module.css";
 
-const META_ITEMS = [
-  { key: "date", label: "January 22, 2026", Icon: CalendarIcon },
-  { key: "duration", label: "2 hours", Icon: ClockIcon },
-  { key: "participants", label: "10 participants", Icon: UsersIcon },
-];
-
 const FALLBACK_DESCRIPTION =
   "Design and craft a unique pendant that reflects your personal style and vision.";
 const FALLBACK_IMAGE = "/images/workshops-hero.jpg";
@@ -28,6 +22,7 @@ function WorkshopCard({ workshop, onBook }) {
   const [src, setSrc] = useState(workshop.image || FALLBACK_IMAGE);
   const discountValue = Number.parseFloat(workshop.discount);
   const hasDiscount = Number.isFinite(discountValue) && discountValue > 0;
+  const meta = workshop.meta || [];
 
   return (
     <article className={styles.card}>
@@ -50,7 +45,7 @@ function WorkshopCard({ workshop, onBook }) {
         <p className={styles.description}>{workshop.description}</p>
 
         <ul className={styles.metaList}>
-          {META_ITEMS.map((item) => (
+          {meta.map((item) => (
             <li key={item.key} className={styles.metaItem}>
               <item.Icon className={styles.metaIcon} />
               <span>{item.label}</span>
@@ -77,6 +72,37 @@ function WorkshopCard({ workshop, onBook }) {
 }
 
 export default function WorkshopsList({ workshops = [], onBook = () => {} }) {
+  const formatDate = (value) => {
+    if (!value) return "";
+    const parsed = Date.parse(value);
+    if (Number.isNaN(parsed)) return "";
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date(parsed));
+  };
+
+  const formatDuration = (value) => {
+    if (value === undefined || value === null || value === "") return "";
+    const num = Number(value);
+    if (Number.isFinite(num)) {
+      const unit = num === 1 ? "hour" : "hours";
+      return `${num} ${unit}`;
+    }
+    return String(value);
+  };
+
+  const formatParticipants = (value) => {
+    if (value === undefined || value === null || value === "") return "";
+    const num = Number(value);
+    if (Number.isFinite(num)) {
+      const unit = num === 1 ? "participant" : "participants";
+      return `${num} ${unit}`;
+    }
+    return String(value);
+  };
+
   const normalizedWorkshops = useMemo(
     () =>
       (workshops || []).map((item, index) => {
@@ -90,6 +116,14 @@ export default function WorkshopsList({ workshops = [], onBook = () => {} }) {
           `workshop-${index}`;
         const rawDiscount = Number.parseFloat(item?.discount);
         const hasDiscount = Number.isFinite(rawDiscount) && rawDiscount > 0;
+        const dateLabel = formatDate(item?.materials);
+        const durationLabel = formatDuration(item?.stone);
+        const participantsLabel = formatParticipants(item?.typeofmessage);
+        const meta = [
+          dateLabel && { key: "date", label: dateLabel, Icon: CalendarIcon },
+          durationLabel && { key: "duration", label: durationLabel, Icon: ClockIcon },
+          participantsLabel && { key: "participants", label: participantsLabel, Icon: UsersIcon },
+        ].filter(Boolean);
 
         return {
           id,
@@ -99,6 +133,7 @@ export default function WorkshopsList({ workshops = [], onBook = () => {} }) {
           image: imageSrc,
           price: item?.price ? `${item.price} CHF` : "60 CHF",
           discount: hasDiscount ? rawDiscount : null,
+          meta,
         };
       }),
     [workshops]

@@ -1,5 +1,5 @@
 import HeroBanner from "@/components/layout/HeroBanner/HeroBanner";
-import { fetchProducts } from "@/lib/api";
+import { fetchProducts, isAvailableForStorefront } from "@/lib/api";
 import WorkshopsContent from "@/components/workshops/WorkshopsContent";
 import styles from "./page.module.css";
 
@@ -10,7 +10,7 @@ export default async function WorkshopsPage() {
 
   try {
     const { items } = await fetchProducts({ category: "workshop", limit: 24 });
-    workshops = items || [];
+    workshops = (items || []).filter(isAvailableForStorefront);
   } catch (e) {
     workshops = [];
   }

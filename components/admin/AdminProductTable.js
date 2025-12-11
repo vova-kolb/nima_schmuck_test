@@ -42,17 +42,10 @@ const ProductThumb = ({ product, name }) => {
 };
 
 const deriveStatus = (product) => {
-  // Prefer explicit availability status fields; only fall back to availability if it's not numeric
   const rawStatus =
     product.availabilitystatus ??
     product.availabilityStatus ??
     product.availability_status ??
-    (() => {
-      const raw = product.availability;
-      if (raw === undefined || raw === null || raw === "") return "";
-      const isNumeric = !Number.isNaN(Number(raw));
-      return isNumeric ? "" : raw;
-    })() ??
     "";
 
   const normalized = String(rawStatus).trim().toLowerCase();
@@ -78,9 +71,14 @@ const formatPrice = (price, discount) => {
   return hasDiscount ? `${priceLabel} (-${discountValue}%)` : priceLabel;
 };
 
-const formatQuantity = (availability) => {
-  if (availability === undefined || availability === null || availability === "") return "—";
-  return availability;
+const formatDuration = (value) => {
+  if (value === undefined || value === null || value === "") return "—";
+  const num = Number(value);
+  if (Number.isFinite(num)) {
+    const unit = num === 1 ? "hour" : "hours";
+    return `${num} ${unit}`;
+  }
+  return value;
 };
 
 const PencilIcon = () => (
@@ -122,7 +120,7 @@ export default function AdminProductTable({
   const tableClass = classNames(styles.table, isWorkshop && styles.workshop);
 
   const renderRow = (product) => {
-    const { id, name, category, price, materials, availability } = product;
+    const { id, name, category, price, materials } = product;
     const status = deriveStatus(product);
     const dateValue =
       product.date ??
@@ -131,6 +129,7 @@ export default function AdminProductTable({
       product.dateTime ??
       product.datetime ??
       product.scheduledDate ??
+      (variant === "workshop" ? product.materials : undefined) ??
       "";
     const duration =
       product.duration ??
@@ -138,6 +137,7 @@ export default function AdminProductTable({
       product.durationhours ??
       product.length ??
       product.time ??
+      (variant === "workshop" ? product.stone : undefined) ??
       "";
 
     return (
@@ -152,9 +152,8 @@ export default function AdminProductTable({
           </div>
         </div>
         <div className={styles.cell}>{isWorkshop ? dateValue || "—" : category || "—"}</div>
-        {isWorkshop && <div className={styles.cell}>{duration || "—"}</div>}
+        {isWorkshop && <div className={styles.cell}>{formatDuration(duration)}</div>}
         <div className={styles.cell}>{formatPrice(price, product.discount)}</div>
-        {!isWorkshop && <div className={styles.cell}>{formatQuantity(availability)}</div>}
         <div className={styles.cell}>
           <span className={classNames(styles.status, styles[status.tone])}>{status.label}</span>
         </div>
@@ -215,7 +214,6 @@ export default function AdminProductTable({
             <span>{isWorkshop ? "Date" : "Category"}</span>
             {isWorkshop && <span>Duration</span>}
             <span>Price</span>
-            {!isWorkshop && <span>Quantity</span>}
             <span>Status</span>
             <span className={styles.alignRight}>Actions</span>
           </div>

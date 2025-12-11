@@ -75,6 +75,11 @@ export default function Header() {
           </ul>
         </nav>
         <div className={styles.actions}>
+          {isAdmin && (
+            <Link href="/admin/products" className={styles.navLink}>
+              Admin
+            </Link>
+          )}
           <button
             type="button"
             className={`${styles.iconButton} ${styles.burgerButton}`}

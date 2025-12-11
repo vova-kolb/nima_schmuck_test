@@ -42,7 +42,7 @@
 
 .head {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 0.9fr 1fr 0.8fr;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr 0.8fr;
   padding: 12px 14px;
   background: #f3f5f7;
   color: #6a7280;
@@ -61,7 +61,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 0.9fr 1fr 0.8fr;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr 0.8fr;
   align-items: center;
   padding: 12px 14px;
   column-gap: 12px;
@@ -288,7 +288,7 @@
 @media (max-width: 1024px) {
   .head,
   .row {
-    grid-template-columns: 2fr 1fr 0.9fr 0.9fr 0.9fr 0.8fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr;
   }
 
   .workshop .head,

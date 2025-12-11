@@ -3,6 +3,36 @@
 import { useEffect, useState } from "react";
 import styles from "./AdminProductForm.module.css";
 
+const AVAILABILITY_OPTIONS = [
+  { value: "not available", label: "Not available" },
+  { value: "in stock", label: "In stock" },
+  { value: "on request", label: "On request" },
+];
+
+const normalizeAvailability = (value) => {
+  const normalized = String(value ?? "").trim().toLowerCase();
+  if (!normalized) return "";
+  if (normalized.includes("request")) return "on request";
+  if (
+    normalized.includes("in stock") ||
+    normalized === "instock" ||
+    normalized === "in-stock"
+  ) {
+    return "in stock";
+  }
+  if (normalized.includes("not") || normalized.includes("out")) {
+    return "not available";
+  }
+  return AVAILABILITY_OPTIONS.some((option) => option.value === normalized) ? normalized : "";
+};
+
+const toDateInputValue = (value) => {
+  if (!value) return "";
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) return "";
+  return new Date(parsed).toISOString().slice(0, 10);
+};
+
 const DEFAULT_PRODUCT = {
   name: "",
   category: "",
@@ -37,27 +67,32 @@ export default function AdminProductForm({
 
   useEffect(() => {
     if (initialData) {
-      const normalizedStatus = (() => {
-        const raw = (initialData.availabilitystatus || "").toLowerCase();
-        if (raw.includes("in stock")) return "in stock";
-        if (raw.includes("not available")) return "not available";
-        return initialData.availabilitystatus || "";
-      })();
+      const normalizedAvailability = normalizeAvailability(
+        initialData.availability ??
+          initialData.availabilitystatus ??
+          initialData.availabilityStatus ??
+          initialData.availability_status ??
+          ""
+      );
       const normalizedMessageType =
         initialData.typeofmessage ?? initialData.typeOfMessage ?? initialData.messageType ?? "";
+      const normalizedDate = isWorkshop ? toDateInputValue(initialData.materials) : undefined;
       setFormData({
         ...DEFAULT_PRODUCT,
         category: isWorkshop ? "workshop" : initialData.category ?? "",
         ...initialData,
+        materials: isWorkshop ? normalizedDate || "" : initialData.materials ?? "",
         price: initialData.price ?? "",
         discount: initialData.discount ?? "",
         typeofmessage: normalizedMessageType,
-        availabilitystatus: normalizedStatus,
+        availability: normalizedAvailability,
+        availabilitystatus: normalizedAvailability,
       });
     } else {
       setFormData({
         ...DEFAULT_PRODUCT,
         category: isWorkshop ? "workshop" : "",
+        availability: isWorkshop ? "in stock" : "",
         availabilitystatus: isWorkshop ? "in stock" : "",
       });
     }
@@ -87,7 +122,7 @@ export default function AdminProductForm({
   const handleSubmit = async (event) => {
     event.preventDefault();
     const required = isWorkshop
-      ? ["name", "price", "description", "availabilitystatus"]
+      ? ["name", "price", "materials", "stone", "typeofmessage", "description", "availability"]
       : [
           "name",
           "category",
@@ -107,6 +142,7 @@ export default function AdminProductForm({
     }
 
     setLocalError("");
+    const normalizedAvailability = normalizeAvailability(formData.availability);
     onSubmit?.({
       data: isWorkshop
         ? {
@@ -114,10 +150,18 @@ export default function AdminProductForm({
             category: "workshop",
             price: formData.price,
             discount: formData.discount,
+            materials: formData.materials,
+            stone: formData.stone,
+            typeofmessage: formData.typeofmessage,
             description: formData.description,
-            availabilitystatus: formData.availabilitystatus || "",
+            availability: normalizedAvailability,
+            availabilitystatus: normalizedAvailability,
           }
-        : formData,
+        : {
+            ...formData,
+            availability: normalizedAvailability,
+            availabilitystatus: normalizedAvailability,
+          },
       avatarFile,
       galleryFiles,
     });
@@ -183,16 +227,78 @@ export default function AdminProductForm({
             />
           </label>
 
+          {!isWorkshop && (
+            <label className={styles.field}>
+              <span>Discount *</span>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={formData.discount}
+                onChange={handleChange("discount")}
+                placeholder="20"
+              />
+            </label>
+          )}
+
+          {isWorkshop && (
+            <>
+              <label className={styles.field}>
+                <span>Date *</span>
+                <input
+                  type="date"
+                  value={formData.materials}
+                  onChange={handleChange("materials")}
+                  placeholder="Select date"
+                />
+              </label>
+
+              <label className={styles.field}>
+                <span>Duration *</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  value={formData.stone}
+                  onChange={handleChange("stone")}
+                  placeholder="e.g. 2"
+                />
+              </label>
+
+              <label className={styles.field}>
+                <span>Participants *</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={formData.typeofmessage}
+                  onChange={handleChange("typeofmessage")}
+                  placeholder="e.g. 10"
+                />
+              </label>
+            </>
+          )}
+
           <label className={styles.field}>
-            <span>Discount{!isWorkshop ? " *" : ""}</span>
-            <input
-              type="number"
-              min="0"
-              step="1"
-              value={formData.discount}
-              onChange={handleChange("discount")}
-              placeholder="20"
-            />
+            <span>Availability *</span>
+            <select
+              value={formData.availability}
+              onChange={(event) => {
+                const normalized = normalizeAvailability(event.target.value);
+                setFormData((prev) => ({
+                  ...prev,
+                  availability: normalized,
+                  availabilitystatus: normalized,
+                }));
+              }}
+            >
+              <option value="">Select availability</option>
+              {AVAILABILITY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </label>
 
           {!isWorkshop && (
@@ -207,16 +313,6 @@ export default function AdminProductForm({
                 />
               </label>
 
-              <label className={styles.field}>
-                <span>Availability *</span>
-                <input
-                  type="text"
-                  value={formData.availability}
-                  onChange={handleChange("availability")}
-                  placeholder="in stock"
-                />
-              </label>
-
               <label className={`${styles.field} ${styles.checkboxField}`}>
                 <span>Featured</span>
                 <input
@@ -227,18 +323,6 @@ export default function AdminProductForm({
               </label>
             </>
           )}
-
-          <label className={styles.field}>
-            <span>Availability status *</span>
-            <select
-              value={formData.availabilitystatus}
-              onChange={handleChange("availabilitystatus")}
-            >
-              <option value="">Select status</option>
-              <option value="in stock">In stock</option>
-              <option value="not available">Not available</option>
-            </select>
-          </label>
         </div>
 
         {!isWorkshop && (

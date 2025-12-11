@@ -25,7 +25,7 @@ export default function ProductsSection({ pageSize } = {}) {
     prevPage,
     updateSearch,
     selectSort,
-  } = useProducts({ pageSize });
+  } = useProducts({ pageSize, hideUnavailable: true });
   const sortOptions = [
     { label: 'Default', value: '' },
     { label: 'Price: Low to High', value: 'price:asc' },

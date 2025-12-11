@@ -8,11 +8,6 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 
 const FALLBACK_IMAGE = "/images/workshops-hero.jpg";
-const META_ITEMS = [
-  { key: "date", label: "January 22, 2026", Icon: CalendarIcon },
-  { key: "time", label: "2 hours", Icon: ClockIcon },
-  { key: "participants", label: "10 participants", Icon: UsersIcon },
-];
 
 export default async function WorkshopDetailPage({ params = {} }) {
   const resolved = await params;
@@ -44,6 +39,41 @@ export default async function WorkshopDetailPage({ params = {} }) {
     product.description ||
     "Design and craft a unique pendant that reflects your personal style and vision.";
 
+  const formatDate = (value) => {
+    if (!value) return "";
+    const parsed = Date.parse(value);
+    if (Number.isNaN(parsed)) return "";
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date(parsed));
+  };
+  const formatDuration = (value) => {
+    if (value === undefined || value === null || value === "") return "";
+    const num = Number(value);
+    if (Number.isFinite(num)) {
+      const unit = num === 1 ? "hour" : "hours";
+      return `${num} ${unit}`;
+    }
+    return String(value);
+  };
+  const formatParticipants = (value) => {
+    if (value === undefined || value === null || value === "") return "";
+    const num = Number(value);
+    if (Number.isFinite(num)) {
+      const unit = num === 1 ? "participant" : "participants";
+      return `${num} ${unit}`;
+    }
+    return String(value);
+  };
+
+  const metaItems = [
+    { key: "date", label: formatDate(product.materials), Icon: CalendarIcon },
+    { key: "duration", label: formatDuration(product.stone), Icon: ClockIcon },
+    { key: "participants", label: formatParticipants(product.typeofmessage), Icon: UsersIcon },
+  ].filter((item) => item.label);
+
   return (
     <section className={styles.section}>
       <div className="container">
@@ -64,7 +94,7 @@ export default async function WorkshopDetailPage({ params = {} }) {
             </div>
 
             <ul className={styles.metaList}>
-              {META_ITEMS.map((item) => (
+              {metaItems.map((item) => (
                 <li key={item.key} className={styles.metaItem}>
                   <item.Icon className={styles.metaIcon} />
                   <span>{item.label}</span>
