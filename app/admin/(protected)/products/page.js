@@ -226,6 +226,12 @@ export default function AdminProductsPage() {
             searchPlaceholder={`Search ${currentTitle.toLowerCase()}...`}
             searchTerm={searchTerm}
             onSearchChange={updateSearch}
+            categories={categoriesForTab}
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategorySelect}
+            materials={materials}
+            selectedMaterial={selectedMaterial}
+            onMaterialChange={selectMaterial}
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={selectSort}
