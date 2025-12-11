@@ -101,7 +101,11 @@ export default function ProductsSection({ pageSize } = {}) {
           sortOptions={sortOptions}
         />
 
-        {loading && <p className={styles.status}>Loading...</p>}
+        {loading && (
+          <div className={styles.loaderWrap}>
+            <span className="loader" aria-label="Loading products" />
+          </div>
+        )}
         {error && <p className={`${styles.status} ${styles.error}`}>{error}</p>}
 
         {!loading && !error && <ProductGrid products={filteredProducts} />}

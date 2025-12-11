@@ -17,7 +17,6 @@ const buildSlides = (productId, rawImages = []) => {
         buildGalleryImageUrl(productId, idx)
       )
     : [];
-  const avatar = buildGalleryAvatarUrl(productId);
   const fallbackImages = Array.isArray(rawImages)
     ? rawImages
     : rawImages
@@ -25,8 +24,9 @@ const buildSlides = (productId, rawImages = []) => {
       : [];
 
   const seen = new Set();
-  const combined = [...galleryImages, avatar, ...fallbackImages]
+  const combined = [...galleryImages, ...fallbackImages]
     .map((src) => normalizeImageSrc(src))
+    .filter((src) => !src.includes("/avatar"))
     .filter((src) => {
       if (!src) return false;
       if (seen.has(src)) return false;

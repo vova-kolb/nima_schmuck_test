@@ -74,6 +74,13 @@
   color: #6b6663;
 }
 
+.loaderWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px 0;
+}
+
 .error {
   color: #c5393f;
 }

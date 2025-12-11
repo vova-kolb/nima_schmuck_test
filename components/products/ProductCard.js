@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/lib/hooks/useCart";
+import { buildGalleryAvatarUrl, normalizeImageSrc } from "@/lib/api";
 import styles from "./ProductCard.module.css";
 
 export default function ProductCard({ product }) {
@@ -14,19 +15,19 @@ export default function ProductCard({ product }) {
   const { img, name, category, materials, price, message, id, discount } = product;
   const placeholder = "/images/product.jpg";
 
-  const rawSrc = Array.isArray(img) && img.length > 0 ? img[0] : placeholder;
+  const galleryKey =
+    product?.galleryId ??
+    product?.productId ??
+    product?.product_id ??
+    product?.id ??
+    product?._id ??
+    null;
+  const avatarSrc = normalizeImageSrc(buildGalleryAvatarUrl(galleryKey));
+  const [displaySrc, setDisplaySrc] = useState(avatarSrc || placeholder);
 
-  const imageSrc = rawSrc.replace(/^\.?\/?public/, "");
-  const isAbsolute = /^https?:\/\//i.test(imageSrc);
-  const normalizedSrc = isAbsolute
-    ? imageSrc
-    : imageSrc
-    ? imageSrc.startsWith("/")
-      ? imageSrc
-      : `/${imageSrc}`
-    : placeholder;
-
-  const [displaySrc, setDisplaySrc] = useState(normalizedSrc || placeholder);
+  useEffect(() => {
+    setDisplaySrc(avatarSrc || placeholder);
+  }, [avatarSrc, product?.id]);
 
   const displayPrice = price ? `${price} CHF` : "";
   const discountValue = Number.parseFloat(discount);

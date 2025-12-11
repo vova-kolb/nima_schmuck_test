@@ -3,9 +3,12 @@ import { fetchProducts, isAvailableForStorefront } from "@/lib/api";
 import WorkshopsContent from "@/components/workshops/WorkshopsContent";
 import styles from "./page.module.css";
 
+const demoDelay = (ms = 2000) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const revalidate = 0;
 
 export default async function WorkshopsPage() {
+  await demoDelay();
   let workshops = [];
 
   try {

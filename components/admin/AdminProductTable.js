@@ -20,7 +20,11 @@ const deriveProductKey = (product) =>
 const resolveImageSrc = (product) => {
   const key = deriveProductKey(product);
   const avatar = buildGalleryAvatarUrl(key);
-  const raw = Array.isArray(product?.img) ? product.img[0] : product?.img;
+  const rawList = Array.isArray(product?.img) ? product.img : [product?.img];
+  const rawAvatar = rawList.find(
+    (src) => typeof src === "string" && src.toLowerCase().includes("avatar")
+  );
+  const raw = rawAvatar || rawList.find(Boolean);
   const candidates = [avatar, raw, fallbackImg];
   return candidates.map((candidate) => normalizeImageSrc(candidate)).find(Boolean);
 };
