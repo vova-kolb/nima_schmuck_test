@@ -54,9 +54,12 @@ const targetCandidatesForKey = (pageKey) => {
 };
 
 const deriveTitle = (hero, fallbackTitle) => {
-  const lines = [hero?.herotitle1, hero?.herotitle2, hero?.herotitle3].filter(
-    Boolean
-  );
+  const sanitize = (value) => (value === "__EMPTY__" ? "" : value);
+  const lines = [
+    sanitize(hero?.herotitle1),
+    sanitize(hero?.herotitle2),
+    sanitize(hero?.herotitle3),
+  ].filter(Boolean);
   if (lines.length > 0) return lines.join("\n");
   if (hero?.heroheader) return hero.heroheader;
   return fallbackTitle;

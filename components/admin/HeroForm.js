@@ -115,7 +115,7 @@ export default function HeroForm({
             ))}
           </select>
           <span className={styles.helper}>
-            Page where this hero banner should appear (not the CTA target).
+            Page where this hero banner should appear.
           </span>
         </label>
       </div>
