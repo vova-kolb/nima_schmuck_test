@@ -67,11 +67,11 @@ textarea {
 }
 
 .reveal-after-logo {
-  --reveal-delay: 1200ms;
+  --reveal-delay: 950ms;
 }
 
 .reveal-after-hero {
-  --reveal-delay: 1800ms;
+  --reveal-delay: 1450ms;
 }
 
 @keyframes revealUp {

@@ -4,29 +4,44 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useCart } from '@/lib/hooks/useCart';
+import { resolveItemPricing } from '@/lib/pricing';
 import styles from './page.module.css';
 
 const formatPrice = (value) => `${(Number(value) || 0).toFixed(2)} CHF`;
 
 export default function CheckoutPage() {
-  const { items, totalPrice, totalCount } = useCart();
+  const { items, totalPrice, totalCount, subtotal, discountTotal } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
 
-  const lineItems = useMemo(
+  const detailedItems = useMemo(
     () =>
-      items.map((item) => ({
-        id: item.id,
-        name: item.name || 'Product',
-        price: Number(item.price) || 0,
-        quantity: item.quantity || 1,
-        image: Array.isArray(item.img) ? item.img[0] : item.img,
-      })),
+      items.map((item) => {
+        const pricing = resolveItemPricing(item);
+        return {
+          ...item,
+          image: Array.isArray(item.img) ? item.img[0] : item.img,
+          pricing,
+        };
+      }),
     [items],
   );
 
+  const payloadItems = useMemo(
+    () =>
+      detailedItems.map((item) => ({
+        id: item.id,
+        name: item.name || 'Product',
+        price: item.pricing.basePrice,
+        discount: item.pricing.discountValue,
+        quantity: item.pricing.quantity,
+        image: item.image,
+      })),
+    [detailedItems],
+  );
+
   const handlePay = async () => {
-    if (!lineItems.length) {
+    if (!payloadItems.length) {
       setStatus({ type: 'error', message: 'Add items to cart before checkout.' });
       return;
     }
@@ -38,12 +53,12 @@ export default function CheckoutPage() {
       const res = await fetch('/api/checkout/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: lineItems }),
+        body: JSON.stringify({ items: payloadItems }),
       });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || 'Failed to create payment.');
+        throw new Error(err.error || 'Failed to create payment.');
       }
 
       const data = await res.json();
@@ -104,26 +119,37 @@ export default function CheckoutPage() {
               </div>
 
               <ul className={styles.list}>
-                {lineItems.map((item) => {
-                  const lineTotal = (Number(item.price) || 0) * (item.quantity || 1);
+                {detailedItems.map((item) => {
+                  const { basePrice, hasDiscount, discountValue, unitPrice, lineTotal, quantity } =
+                    item.pricing;
+                  const displayName = item.name || 'Product';
                   return (
                     <li key={item.id} className={styles.item}>
                       <div className={styles.thumb}>
                         <Image
                           src={item.image || '/images/product.jpg'}
-                          alt={item.name}
+                          alt={displayName}
                           fill
                           sizes="96px"
                           className={styles.thumbImg}
                         />
                       </div>
                       <div className={styles.itemContent}>
-                        <p className={styles.itemName}>{item.name}</p>
-                        <p className={styles.itemMeta}>
-                          Qty: {item.quantity} · Price: {formatPrice(item.price)}
-                        </p>
+                        <p className={styles.itemName}>{displayName}</p>
+                        <p className={styles.itemMeta}>Qty: {quantity}</p>
+                        <div className={styles.itemPrices}>
+                          {hasDiscount ? (
+                            <>
+                              <span className={styles.priceOld}>{formatPrice(basePrice)}</span>
+                              <span className={styles.discountBadge}>-{discountValue}%</span>
+                              <span className={styles.priceNew}>{formatPrice(unitPrice)}</span>
+                            </>
+                          ) : (
+                            <span className={styles.priceNew}>{formatPrice(unitPrice)}</span>
+                          )}
+                        </div>
                       </div>
-                    <p className={styles.itemPrice}>{formatPrice(lineTotal)}</p>
+                      <p className={styles.itemPrice}>{formatPrice(lineTotal)}</p>
                     </li>
                   );
                 })}
@@ -134,8 +160,14 @@ export default function CheckoutPage() {
           <aside className={styles.summary} aria-label="Order summary">
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
-              <span className={styles.summaryValue}>{formatPrice(totalPrice)}</span>
+              <span className={styles.summaryValue}>{formatPrice(subtotal)}</span>
             </div>
+            {discountTotal > 0 && (
+              <div className={`${styles.summaryRow} ${styles.summaryDiscount}`}>
+                <span>Discount</span>
+                <span className={styles.summaryValue}>-{formatPrice(discountTotal)}</span>
+              </div>
+            )}
             <div className={styles.summaryRow}>
               <span>Shipping</span>
               <span className={styles.summaryValue}>Calculated at Stripe</span>
@@ -164,7 +196,7 @@ export default function CheckoutPage() {
               {isSubmitting ? 'Creating payment...' : 'Pay now'}
             </button>
             <p className={styles.note}>
-              You will be redirected to Stripe’s secure checkout to choose your payment method.
+              You will be redirected to Stripe's secure checkout to choose your payment method.
             </p>
             <div className={styles.links}>
               <Link href="/cart" className={styles.linkSecondary}>

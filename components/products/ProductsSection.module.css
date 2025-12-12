@@ -74,13 +74,6 @@
   color: #6b6663;
 }
 
-.loaderWrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 18px 0;
-}
-
 .error {
   color: #c5393f;
 }
@@ -120,6 +113,80 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+.contentArea {
+  width: 100%;
+}
+
+.placeholderGrid {
+  display: grid;
+  gap: clamp(16px, 2.2vw, 26px);
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  margin-top: 8px;
+}
+
+@media (min-width: 620px) {
+  .placeholderGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 920px) {
+  .placeholderGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1180px) {
+  .placeholderGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.placeholderCard {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: #ffffff;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #f3ecea;
+}
+
+.placeholderMedia {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(120deg, #f3edeb 30%, #f7f2f1 45%, #f3edeb 60%);
+  background-size: 200% 200%;
+  animation: placeholderSheen 1.4s ease-in-out infinite;
+}
+
+.placeholderBody {
+  padding: 14px 12px 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.placeholderLine {
+  height: 12px;
+  border-radius: 999px;
+  background: #f1e9e6;
+}
+
+.placeholderLineShort {
+  width: 30%;
+  height: 12px;
+  border-radius: 999px;
+  background: #e9dedb;
+}
+
+@keyframes placeholderSheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
 }
 
 @media (max-width: 768px) {

@@ -1,11 +1,15 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/lib/hooks/useProducts';
 import ProductGrid from './ProductGrid';
 import ProductFilters from './ProductFilters';
 import styles from './ProductsSection.module.css';
 
 export default function ProductsSection({ pageSize } = {}) {
+  const sectionRef = useRef(null);
+  const contentRef = useRef(null);
+  const [contentMinHeight, setContentMinHeight] = useState(0);
   const normalize = (value) => String(value || '').toLowerCase().trim();
   const {
     products,
@@ -50,9 +54,54 @@ export default function ProductsSection({ pageSize } = {}) {
     { label: 'Price: Low to High', value: 'price:asc' },
     { label: 'Price: High to Low', value: 'price:desc' },
   ];
+  const placeholderCount = Number.isFinite(Number(pageSize))
+    ? Math.max(Number(pageSize), 8)
+    : 12;
+
+  const measureContentHeight = () => {
+    if (!contentRef.current) return;
+    const rect = contentRef.current.getBoundingClientRect();
+    if (rect.height > 0) {
+      setContentMinHeight((prev) => Math.max(prev, Math.ceil(rect.height)));
+    }
+  };
+
+  const getHeaderOffset = () => {
+    const header = typeof document !== 'undefined' ? document.querySelector('header') : null;
+    const headerHeight = header?.getBoundingClientRect().height || 0;
+    return Math.max(headerHeight + 12, 60);
+  };
+
+  const scrollToSectionTop = () => {
+    if (!sectionRef.current || typeof window === 'undefined') return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const offset = getHeaderOffset();
+    const targetTop = rect.top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    measureContentHeight();
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      measureContentHeight();
+    }
+  }, [loading]);
+
+  const handlePrevPage = () => {
+    prevPage();
+    scrollToSectionTop();
+  };
+
+  const handleNextPage = () => {
+    nextPage();
+    scrollToSectionTop();
+  };
 
   return (
-    <section className={`${styles.section} reveal-up reveal-after-hero`}>
+    <section ref={sectionRef} className={`${styles.section} reveal-up reveal-after-hero`}>
       <div className="container">
         <div className={styles.header}>
           <p className={styles.kicker}>Our Collections</p>
@@ -102,35 +151,51 @@ export default function ProductsSection({ pageSize } = {}) {
         />
 
         {loading && (
-          <div className={styles.loaderWrap}>
-            <span className="loader" aria-label="Loading products" />
+          <div className={styles.placeholderGrid} aria-hidden="true">
+            {Array.from({ length: placeholderCount }).map((_, index) => (
+              <div key={index} className={styles.placeholderCard}>
+                <div className={styles.placeholderMedia} />
+                <div className={styles.placeholderBody}>
+                  <div className={styles.placeholderLineShort} />
+                  <div className={styles.placeholderLine} />
+                  <div className={styles.placeholderLine} />
+                </div>
+              </div>
+            ))}
           </div>
         )}
-        {error && <p className={`${styles.status} ${styles.error}`}>{error}</p>}
 
-        {!loading && !error && <ProductGrid products={filteredProducts} />}
+        <div
+          ref={contentRef}
+          className={styles.contentArea}
+          style={contentMinHeight ? { minHeight: `${contentMinHeight}px` } : undefined}
+        >
+          {error && <p className={`${styles.status} ${styles.error}`}>{error}</p>}
 
-        {!loading && !error && totalPages > 1 && (
-          <div className={styles.pagination}>
-            <button
-              className={styles.pageButton}
-              disabled={page <= 1 || loading}
-              onClick={prevPage}
-            >
-              Previous
-            </button>
-            <span className={styles.pageInfo}>
-              Page {page} of {totalPages}
-            </span>
-            <button
-              className={styles.pageButton}
-              disabled={page >= totalPages || loading}
-              onClick={nextPage}
-            >
-              Next
-            </button>
-          </div>
-        )}
+          {!loading && !error && <ProductGrid products={filteredProducts} />}
+
+          {!loading && !error && totalPages > 1 && (
+            <div className={styles.pagination}>
+              <button
+                className={styles.pageButton}
+                disabled={page <= 1 || loading}
+                onClick={handlePrevPage}
+              >
+                Previous
+              </button>
+              <span className={styles.pageInfo}>
+                Page {page} of {totalPages}
+              </span>
+              <button
+                className={styles.pageButton}
+                disabled={page >= totalPages || loading}
+                onClick={handleNextPage}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

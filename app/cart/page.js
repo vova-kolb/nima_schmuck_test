@@ -3,12 +3,21 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/lib/hooks/useCart';
+import { resolveItemPricing } from '@/lib/pricing';
 import styles from './page.module.css';
 
 const formatPrice = (value) => `${(Number(value) || 0).toFixed(2)} CHF`;
 
 export default function CartPage() {
-  const { items, setQuantity, removeItem, totalPrice, totalCount } = useCart();
+  const {
+    items,
+    setQuantity,
+    removeItem,
+    totalPrice,
+    totalCount,
+    subtotal,
+    discountTotal,
+  } = useCart();
   const hasItems = items.length > 0;
 
   const handleDecrease = (id, currentQty) => {
@@ -48,8 +57,7 @@ export default function CartPage() {
           <div className={styles.layout}>
             <ul className={styles.list} aria-label="Items in your cart">
               {items.map((item) => {
-                const lineTotal =
-                  (Number(item.price) || 0) * (item.quantity || 1);
+                const pricing = resolveItemPricing(item);
                 return (
                   <li key={item.id} className={styles.item}>
                     <div className={styles.thumb}>
@@ -112,7 +120,21 @@ export default function CartPage() {
                             +
                           </button>
                         </div>
-                        <p className={styles.itemPrice}>{formatPrice(lineTotal)}</p>
+                        <div className={styles.priceBlock}>
+                          <div className={styles.priceLine}>
+                            {pricing.hasDiscount ? (
+                              <>
+                                <span className={styles.priceOld}>{formatPrice(pricing.basePrice)}</span>
+                                <span className={styles.discountBadge}>-{pricing.discountValue}%</span>
+                                <span className={styles.priceNew}>{formatPrice(pricing.unitPrice)}</span>
+                              </>
+                            ) : (
+                              <span className={styles.priceNew}>{formatPrice(pricing.unitPrice)}</span>
+                            )}
+                          </div>
+                          <p className={styles.itemTotalLabel}>Line total</p>
+                          <p className={styles.itemPrice}>{formatPrice(pricing.lineTotal)}</p>
+                        </div>
                       </div>
                     </div>
                   </li>
@@ -123,6 +145,16 @@ export default function CartPage() {
             <aside className={styles.summary} aria-label="Order summary">
               <div className={styles.summaryRow}>
                 <span>Subtotal</span>
+                <span className={styles.summaryPrice}>{formatPrice(subtotal)}</span>
+              </div>
+              {discountTotal > 0 && (
+                <div className={`${styles.summaryRow} ${styles.summaryDiscount}`}>
+                  <span>Discount</span>
+                  <span className={styles.summaryPrice}>-{formatPrice(discountTotal)}</span>
+                </div>
+              )}
+              <div className={styles.summaryTotal}>
+                <span>Total</span>
                 <span className={styles.summaryPrice}>{formatPrice(totalPrice)}</span>
               </div>
               <p className={styles.summaryNote}>

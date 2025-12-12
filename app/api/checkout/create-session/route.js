@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
+import { normalizeDiscount, normalizePrice } from '@/lib/pricing';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
@@ -38,9 +39,21 @@ export async function POST(request) {
   }
 
   const lineItems = items.map((item) => {
-    const unitAmount = Math.round(Math.max(0, Number(item.price) || 0) * 100);
+    const basePrice = normalizePrice(item.price);
+    const discountValue = normalizeDiscount(item.discount);
+    const hasDiscount = discountValue > 0;
+    const discountedPrice = hasDiscount ? basePrice * (1 - discountValue / 100) : basePrice;
+    const unitAmount = Math.round(Math.max(0, discountedPrice) * 100);
     const quantity = Math.max(1, Number(item.quantity) || 1);
     const imageUrl = toAbsoluteImage(item.image, origin);
+
+    const metadata = {};
+    if (item.id) {
+      metadata.id = String(item.id);
+    }
+    if (hasDiscount) {
+      metadata.discount = String(discountValue);
+    }
 
     return {
       quantity,
@@ -49,7 +62,7 @@ export async function POST(request) {
         unit_amount: unitAmount,
         product_data: {
           name: item.name || 'Product',
-          metadata: item.id ? { id: String(item.id) } : undefined,
+          metadata: Object.keys(metadata).length ? metadata : undefined,
           images: imageUrl ? [imageUrl] : undefined,
         },
       },
