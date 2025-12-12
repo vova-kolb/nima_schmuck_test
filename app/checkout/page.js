@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCart } from '@/lib/hooks/useCart';
 import { resolveItemPricing } from '@/lib/pricing';
 import styles from './page.module.css';
@@ -13,6 +13,9 @@ export default function CheckoutPage() {
   const { items, totalPrice, totalCount, subtotal, discountTotal } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const reveal = (extra = '') => (mounted ? `reveal-up ${extra}`.trim() : '');
 
   const detailedItems = useMemo(
     () =>
@@ -79,7 +82,7 @@ export default function CheckoutPage() {
     return (
       <section className={styles.section}>
         <div className="container">
-          <div className={`${styles.empty} reveal-up reveal-delay-sm`}>
+          <div className={`${styles.empty} ${reveal('reveal-delay-sm')}`}>
             <p className={styles.kicker}>Checkout</p>
             <h1 className={styles.title}>Your cart is empty</h1>
             <p className={styles.text}>Add jewelry pieces you love and come back to checkout.</p>
@@ -100,7 +103,7 @@ export default function CheckoutPage() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <div className={`${styles.layout} reveal-up reveal-delay-sm`}>
+        <div className={`${styles.layout} ${reveal('reveal-delay-sm')}`}>
           <div className={styles.main}>
             <p className={styles.kicker}>Checkout</p>
             <h1 className={styles.title}>Review your order</h1>
@@ -108,7 +111,7 @@ export default function CheckoutPage() {
               Confirm items and quantities, then pay securely with Stripe.
             </p>
 
-            <div className={`${styles.card} reveal-up reveal-delay-md`}>
+            <div className={`${styles.card} ${reveal('reveal-delay-md')}`}>
               <div className={styles.cardHeader}>
                 <div>
                   <p className={styles.cardTitle}>Items</p>
@@ -157,7 +160,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <aside className={`${styles.summary} reveal-up reveal-delay-lg`} aria-label="Order summary">
+          <aside className={`${styles.summary} ${reveal('reveal-delay-lg')}`} aria-label="Order summary">
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
               <span className={styles.summaryValue}>{formatPrice(subtotal)}</span>

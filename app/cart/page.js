@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useCart } from '@/lib/hooks/useCart';
 import { resolveItemPricing } from '@/lib/pricing';
 import styles from './page.module.css';
@@ -9,6 +10,7 @@ import styles from './page.module.css';
 const formatPrice = (value) => `${(Number(value) || 0).toFixed(2)} CHF`;
 
 export default function CartPage() {
+  const [mounted, setMounted] = useState(false);
   const {
     items,
     setQuantity,
@@ -19,6 +21,8 @@ export default function CartPage() {
     discountTotal,
   } = useCart();
   const hasItems = items.length > 0;
+  useEffect(() => setMounted(true), []);
+  const reveal = (extra = '') => (mounted ? `reveal-up ${extra}`.trim() : '');
 
   const handleDecrease = (id, currentQty) => {
     setQuantity(id, (currentQty || 1) - 1);
@@ -31,7 +35,7 @@ export default function CartPage() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <div className={`${styles.header} reveal-up reveal-delay-sm`}>
+        <div className={`${styles.header} ${reveal('reveal-delay-sm')}`}>
           <div>
             <p className={styles.kicker}>Cart</p>
             <h1 className={styles.title}>Your selection</h1>
@@ -44,7 +48,7 @@ export default function CartPage() {
         </div>
 
         {!hasItems ? (
-          <div className={`${styles.empty} reveal-up reveal-delay-md`}>
+          <div className={`${styles.empty} ${reveal('reveal-delay-md')}`}>
             <p className={styles.emptyTitle}>Your cart is empty</p>
             <p className={styles.emptyText}>
               Add a piece you love to start checkout.
@@ -54,7 +58,7 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div className={`${styles.layout} reveal-up reveal-delay-md`}>
+          <div className={`${styles.layout} ${reveal('reveal-delay-md')}`}>
             <ul className={styles.list} aria-label="Items in your cart">
               {items.map((item) => {
                 const pricing = resolveItemPricing(item);
@@ -142,7 +146,7 @@ export default function CartPage() {
               })}
             </ul>
 
-            <aside className={`${styles.summary} reveal-up reveal-delay-lg`} aria-label="Order summary">
+            <aside className={`${styles.summary} ${reveal('reveal-delay-lg')}`} aria-label="Order summary">
               <div className={styles.summaryRow}>
                 <span>Subtotal</span>
                 <span className={styles.summaryPrice}>{formatPrice(subtotal)}</span>
