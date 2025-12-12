@@ -52,7 +52,7 @@ export default function ProductsSection({ pageSize } = {}) {
   ];
 
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} reveal-up reveal-after-hero`}>
       <div className="container">
         <div className={styles.header}>
           <p className={styles.kicker}>Our Collections</p>

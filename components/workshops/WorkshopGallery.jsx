@@ -2,37 +2,25 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import {
-  buildGalleryAvatarUrl,
-  buildGalleryImageUrl,
-  normalizeImageSrc,
-} from "@/lib/api";
+import { buildLocalProductImages } from "@/lib/api";
 import styles from "./WorkshopGallery.module.css";
 
 const FALLBACK_IMAGE = "/images/workshops-hero.jpg";
 
-const buildSlides = (productId, rawImages = []) => {
-  const galleryImages = productId
-    ? Array.from({ length: 4 }, (_, idx) => buildGalleryImageUrl(productId, idx))
-    : [];
-  const avatar = buildGalleryAvatarUrl(productId);
-  const fallbackImages = Array.isArray(rawImages) ? rawImages : rawImages ? [rawImages] : [];
-
-  const seen = new Set();
-  const combined = [...galleryImages, avatar, ...fallbackImages]
-    .map((src) => normalizeImageSrc(src))
-    .filter((src) => {
-      if (!src) return false;
-      if (seen.has(src)) return false;
-      seen.add(src);
-      return true;
-    });
-
-  return combined.length ? combined.slice(0, 4) : [FALLBACK_IMAGE];
+const buildSlides = (name, galleryId, rawImages = []) => {
+  const { gallery } = buildLocalProductImages(
+    { name: name || galleryId, img: rawImages },
+    galleryId
+  );
+  const slides = gallery.filter(Boolean);
+  return slides.length ? slides : [FALLBACK_IMAGE];
 };
 
 export default function WorkshopGallery({ name, galleryId, images }) {
-  const slides = useMemo(() => buildSlides(galleryId, images), [galleryId, images]);
+  const slides = useMemo(
+    () => buildSlides(name, galleryId, images),
+    [name, galleryId, images]
+  );
   const [active, setActive] = useState(0);
   const [overrides, setOverrides] = useState({});
 

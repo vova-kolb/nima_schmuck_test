@@ -28,60 +28,44 @@ export default async function ProductPage({ params = {} }) {
     price,
     discount,
     availability,
-    stone,
-    typeOfMessage,
-    message,
     description,
     featured,
     img = [],
     galleryId: productGalleryId,
   } = product;
 
-  const discountValue = Number.parseFloat(discount);
-  const hasDiscount = Number.isFinite(discountValue) && discountValue > 0;
-
   const availabilityStatus =
     product.availabilityStatus ?? product.availabilitystatus ?? "";
-  const galleryId =
-    product.productId ??
-    product.product_id ??
-    productGalleryId ??
-    product.gallery ??
-    product.id ??
-    productId;
+  const galleryId = name || productGalleryId || productId;
+
+  const basePrice = Number.parseFloat(price);
+  const hasPrice = Number.isFinite(basePrice);
+  const discountValue = Number.parseFloat(discount);
+  const hasDiscount = hasPrice && Number.isFinite(discountValue) && discountValue > 0;
+  const oldPrice = hasPrice ? `${basePrice.toFixed(2)} CHF` : "";
+  const newPrice = hasDiscount
+    ? `${(basePrice * (1 - discountValue / 100)).toFixed(2)} CHF`
+    : oldPrice;
 
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} reveal-up reveal-delay-sm`}>
       <div className="container">
         <Link href="/" className={styles.backLink}>
           <span aria-hidden="true">&larr;</span> Back to catalog
         </Link>
 
         <div className={styles.layout}>
-          <div className={styles.media}>
+          <div className={`${styles.media} reveal-up reveal-delay-md`}>
             <ProductGallery name={name} galleryId={galleryId} images={img} />
           </div>
 
-          <div className={styles.info}>
+          <div className={`${styles.info} reveal-up reveal-delay-lg`}>
             {category && <p className={styles.meta}>{category}</p>}
             <h1 className={styles.title}>{name || "Product"}</h1>
-            {materials && <p className={styles.meta}>Materials: {materials}</p>}
-            {stone && <p className={styles.meta}>Stone: {stone}</p>}
-
-            <div className={styles.priceRow}>
-              {price !== undefined && (
-                <span className={styles.price}>{price} CHF</span>
-              )}
-              {hasDiscount && (
-                <span className={styles.discount}>-{discountValue}%</span>
-              )}
-            </div>
 
             <div className={styles.badges}>
               {availability && (
-                <span className={styles.badge}>
-                  Availability: {availability}
-                </span>
+                <span className={styles.badge}>Availability: {availability}</span>
               )}
               {availabilityStatus && (
                 <span className={styles.badge}>{availabilityStatus}</span>
@@ -90,15 +74,21 @@ export default async function ProductPage({ params = {} }) {
             </div>
 
             {description && <p className={styles.description}>{description}</p>}
+            {materials && <p className={styles.infoLine}>Materials: {materials}</p>}
 
-            {message && (
-              <div className={styles.messageBlock}>
-                {typeOfMessage && (
-                  <p className={styles.meta}>Type: {typeOfMessage}</p>
-                )}
-                <p className={styles.message}>"{message}"</p>
-              </div>
-            )}
+            <div className={styles.priceRow}>
+              {hasDiscount ? (
+                <>
+                  <span className={styles.priceOldWrap}>
+                    <span className={`${styles.price} ${styles.priceOld}`}>{oldPrice}</span>
+                    <span className={styles.priceDiscountBadge}>-{discountValue}%</span>
+                  </span>
+                  <span className={styles.priceNew}>{newPrice}</span>
+                </>
+              ) : hasPrice ? (
+                <span className={styles.price}>{oldPrice}</span>
+              ) : null}
+            </div>
 
             <ProductActions product={product} />
           </div>

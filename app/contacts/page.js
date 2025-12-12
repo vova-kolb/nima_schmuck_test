@@ -24,7 +24,7 @@ export default function ContactsPage() {
         <HeroBanner pageKey="contact" showHeroImage={false} />
       </div>
 
-      <section className={styles.contactSection} aria-labelledby="contact-heading">
+      <section className={`${styles.contactSection} reveal-up reveal-after-logo`} aria-labelledby="contact-heading">
         <div className="container">
           <div className={styles.contactLayout}>
             <div className={styles.infoColumn}>

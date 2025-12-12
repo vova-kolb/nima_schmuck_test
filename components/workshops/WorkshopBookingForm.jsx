@@ -14,14 +14,19 @@ export default function WorkshopBookingForm({
   };
 
   return (
-    <section className={styles.formSection} id="workshop-form" ref={formRef}>
+    <section
+      className={`${styles.formSection} reveal-up reveal-after-hero`}
+      style={{ "--reveal-delay": "1800ms" }}
+      id="workshop-form"
+      ref={formRef}
+    >
       <div className="container">
         <div className={styles.formWrapper}>
           <div className={styles.formHeader}>
             <h2 className={styles.formTitle}>Book Your Workshop</h2>
-            <p className={styles.formSubtitle}>
+            {/* <p className={styles.formSubtitle}>
               Select a workshop above to get started, or contact us for a custom session.
-            </p>
+            </p> */}
             <p className={styles.selectionNotice}>
               {selectedWorkshop
                 ? `Selected workshop: ${selectedWorkshop}`
@@ -75,13 +80,19 @@ export default function WorkshopBookingForm({
               />
             </label>
 
-            <button className={styles.submitButton} type="submit" disabled={!canSubmit}>
-              {canSubmit ? "Send booking request" : "Please select a workshop above"}
+            <button
+              className={styles.submitButton}
+              type="submit"
+              disabled={!canSubmit}
+            >
+              {canSubmit
+                ? "Send booking request"
+                : "Please select a workshop above"}
             </button>
 
             <p className={styles.helperText}>
-              After submitting, we&apos;ll contact you within 24 hours to confirm your booking and
-              process payment.
+              After submitting, we&apos;ll contact you within 24 hours to
+              confirm your booking and process payment.
             </p>
           </form>
         </div>

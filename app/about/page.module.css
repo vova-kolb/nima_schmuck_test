@@ -2,13 +2,13 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 48px;
   background: var(--color-background-main, #ffffff);
 }
 
 .storySection {
   width: 100%;
   padding: 12px 0 0;
+  margin: 100px 0;
 }
 
 .storyGrid {
@@ -34,7 +34,7 @@
 
 .title {
   font-size: 40px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--color-text-primary, #171717);
   line-height: 1.2;
 }
@@ -54,11 +54,11 @@
 .storyImageWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  border-radius: 16px;
+  aspect-ratio: 4 / 4;
+  border-radius: 5px;
   overflow: hidden;
   background: #f6f1ee;
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0 22px 60px rgba(0, 0, 0, 0.08); */
 }
 
 .storyImage {
@@ -75,9 +75,7 @@
 
 .valueCard {
   background: #ffffff;
-  border-radius: 12px;
-  padding: 18px 18px 20px;
-  border: 1px solid #f0e5e0;
+  padding: 18px 0 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -86,20 +84,17 @@
 }
 
 .iconBadge {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 1px solid #e7d9d2;
-  background: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.04);
 }
 
 .icon {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 
@@ -143,5 +138,9 @@
   .copy {
     font-size: 15px;
     gap: 12px;
+  }
+
+  .storySection {
+    margin-top: 0;
   }
 }

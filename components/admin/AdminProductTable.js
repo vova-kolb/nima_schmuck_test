@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { buildGalleryAvatarUrl, normalizeImageSrc } from "@/lib/api";
+import { buildLocalProductImages, normalizeImageSrc } from "@/lib/api";
 import styles from "./AdminProductTable.module.css";
 
 const fallbackImg = "/images/product.jpg";
@@ -18,14 +18,11 @@ const deriveProductKey = (product) =>
   product?.gallery;
 
 const resolveImageSrc = (product) => {
-  const key = deriveProductKey(product);
-  const avatar = buildGalleryAvatarUrl(key);
-  const rawList = Array.isArray(product?.img) ? product.img : [product?.img];
-  const rawAvatar = rawList.find(
-    (src) => typeof src === "string" && src.toLowerCase().includes("avatar")
-  );
-  const raw = rawAvatar || rawList.find(Boolean);
-  const candidates = [avatar, raw, fallbackImg];
+  const { avatar, images } = buildLocalProductImages({
+    ...product,
+    galleryId: deriveProductKey(product),
+  });
+  const candidates = [avatar, images?.[0], fallbackImg];
   return candidates.map((candidate) => normalizeImageSrc(candidate)).find(Boolean);
 };
 

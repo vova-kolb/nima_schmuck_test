@@ -1,13 +1,13 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from './Footer.module.css';
+import Image from "next/image";
+import Link from "next/link";
+import styles from "./Footer.module.css";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className={styles.footer}>
-       <div className={`container ${styles.container}`}>
+      <div className={`container ${styles.container}`}>
         <div className={styles.topRow}>
           <div className={styles.brandBlock}>
             <Image
@@ -61,7 +61,6 @@ export default function Footer() {
           </div>
 
           <div className={styles.linkColumns}>
-
             <div className={styles.linkColumn}>
               <p className={styles.columnTitle}>Quick Links</p>
               <ul className={styles.linkList}>
@@ -91,11 +90,11 @@ export default function Footer() {
             <div className={styles.linkColumn}>
               <p className={styles.columnTitle}>Customer Service</p>
               <ul className={styles.linkList}>
-                <li>
+                {/* <li>
                   <Link className={styles.link} href="/shipping-returns">
                     Shipping &amp; Returns
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link className={styles.link} href="/faqs">
                     FAQs
@@ -104,7 +103,6 @@ export default function Footer() {
               </ul>
             </div>
           </div>
-
         </div>
 
         <div className={styles.bottomRow}>
@@ -115,9 +113,9 @@ export default function Footer() {
             <Link className={styles.link} href="/privacy-policy">
               Privacy Policy
             </Link>
-            <Link className={styles.link} href="/terms-of-service">
+            {/* <Link className={styles.link} href="/terms-of-service">
               Terms of Service
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

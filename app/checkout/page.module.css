@@ -274,6 +274,14 @@
   .item {
     grid-template-columns: 72px 1fr;
     grid-template-rows: auto auto;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
   }
 
   .itemPrice {

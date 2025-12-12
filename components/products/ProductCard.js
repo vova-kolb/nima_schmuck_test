@@ -3,17 +3,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/lib/hooks/useCart";
-import { buildGalleryAvatarUrl, normalizeImageSrc } from "@/lib/api";
+import { buildLocalProductImages } from "@/lib/api";
+import { flyToCart } from "@/lib/cartAnimation";
 import styles from "./ProductCard.module.css";
 
 export default function ProductCard({ product }) {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem, items } = useCart();
 
   const { img, name, category, materials, price, message, id, discount } = product;
   const placeholder = "/images/product.jpg";
+  const addButtonRef = useRef(null);
 
   const galleryKey =
     product?.galleryId ??
@@ -22,22 +24,37 @@ export default function ProductCard({ product }) {
     product?.id ??
     product?._id ??
     null;
-  const avatarSrc = normalizeImageSrc(buildGalleryAvatarUrl(galleryKey));
-  const [displaySrc, setDisplaySrc] = useState(avatarSrc || placeholder);
+  const { avatar, images } = useMemo(
+    () => buildLocalProductImages({ ...product, galleryId: galleryKey }),
+    [product, galleryKey]
+  );
+  const primarySrc = avatar || images?.[0] || placeholder;
+  const [displaySrc, setDisplaySrc] = useState(primarySrc);
 
   useEffect(() => {
-    setDisplaySrc(avatarSrc || placeholder);
-  }, [avatarSrc, product?.id]);
+    setDisplaySrc(primarySrc || placeholder);
+  }, [primarySrc, product?.id]);
 
-  const displayPrice = price ? `${price} CHF` : "";
+  const basePrice = Number.parseFloat(price);
+  const hasPrice = Number.isFinite(basePrice);
+  const oldPrice = hasPrice ? `${basePrice.toFixed(2)} CHF` : "";
   const discountValue = Number.parseFloat(discount);
-  const hasDiscount = Number.isFinite(discountValue) && discountValue > 0;
+  const hasDiscount = hasPrice && Number.isFinite(discountValue) && discountValue > 0;
+  const newPrice = hasDiscount
+    ? `${(basePrice * (1 - discountValue / 100)).toFixed(2)} CHF`
+    : oldPrice;
   const displayName = name || "Jewelry piece";
   const href = id ? `/products/${encodeURIComponent(id)}` : "#";
+  const isInCart = useMemo(
+    () => (id ? items.some((item) => item.id === id) : false),
+    [items, id]
+  );
 
   const handleAddToCart = (event) => {
     event.preventDefault();
+    if (!product || isInCart) return;
     addItem(product, 1);
+    flyToCart(addButtonRef.current);
   };
 
   const handleBuyNow = (event) => {
@@ -67,12 +84,6 @@ export default function ProductCard({ product }) {
       <div className={styles.info}>
         <div className={styles.headerRow}>
           {category && <p className={styles.category}>{category}</p>}
-          {(displayPrice || hasDiscount) && (
-            <div className={styles.priceGroup}>
-              {displayPrice && <p className={styles.price}>{displayPrice}</p>}
-              {hasDiscount && <p className={styles.discount}>-{discountValue}%</p>}
-            </div>
-          )}
         </div>
         <Link href={href} className={styles.titleLink}>
           <h3 className={styles.title}>{displayName}</h3>
@@ -80,13 +91,31 @@ export default function ProductCard({ product }) {
         {materials && <p className={styles.material}>{materials}</p>}
         {message && <p className={styles.message}>{message}</p>}
 
+        {hasPrice && (
+          <div className={styles.priceRow}>
+            {hasDiscount ? (
+              <>
+                <span className={styles.priceOldWrap}>
+                  <span className={`${styles.price} ${styles.priceOld}`}>{oldPrice}</span>
+                  <span className={styles.priceDiscountBadge}>-{discountValue}%</span>
+                </span>
+                <span className={styles.priceNew}>{newPrice}</span>
+              </>
+            ) : (
+              <span className={styles.price}>{oldPrice}</span>
+            )}
+          </div>
+        )}
+
         <div className={styles.actions}>
           <button
             type="button"
             className={`${styles.button} ${styles.secondary}`}
+            disabled={isInCart}
             onClick={handleAddToCart}
+            ref={addButtonRef}
           >
-            Add to cart
+            {isInCart ? "Added" : "Add to cart"}
           </button>
           <button
             type="button"

@@ -11,9 +11,11 @@ export default function AppShell({ children }) {
 
   return (
     <CartProvider>
-      {!isAdmin && <Header />}
-      {children}
-      {!isAdmin && <Footer />}
+      <div className="app-shell">
+        {!isAdmin && <Header />}
+        <div className="app-shell__content">{children}</div>
+        {!isAdmin && <Footer />}
+      </div>
     </CartProvider>
   );
 }

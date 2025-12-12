@@ -25,40 +25,46 @@
 
 .media {
   width: 100%;
-  border-radius: 16px;
-  /* overflow: hidden; */
+  border-radius: 5px;
+  overflow: hidden;
   background: #f8f5f4;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: auto;
+  height: clamp(360px, 75vw, 680px);
 }
 
 .heroImage {
   object-fit: cover;
+  border-radius: 5px;
 }
 
 .info {
   display: grid;
   gap: 12px;
+  max-width: 520px;
 }
 
 .title {
   margin: 0;
   font-size: clamp(26px, 4vw, 34px);
   color: #2c2b2b;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .price {
   color: #d86972;
   font-weight: 700;
   font-size: 18px;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 .priceRow {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: -10px;
 }
 
 .discount {
@@ -70,27 +76,29 @@
 .metaList {
   list-style: none;
   padding: 0;
-  margin: 4px 0 6px;
+  margin: 8px 0 12px;
   display: grid;
   gap: 8px;
-  color: #4b4a4a;
+  color: #9a6f72;
 }
 
 .metaItem {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .metaIcon {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   color: #c05b64;
+  object-fit: contain;
 }
 
 .description {
-  margin: 6px 0 10px;
+  /* margin: 10px 0 16px; */
   color: #444;
   line-height: 1.6;
 }

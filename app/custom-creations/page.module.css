@@ -54,7 +54,7 @@
 .stepsGrid::before {
   content: "";
   position: absolute;
-  top: 45px;
+  top: 38px;
   left: 0;
   right: 0;
   height: 1px;
@@ -211,23 +211,24 @@
 }
 
 .submitRow {
-  display: flex;
-  justify-content: center;
   margin-top: 2px;
 }
 
 .submitButton {
   width: 100%;
-  max-width: 360px;
   border: none;
   border-radius: 8px;
   padding: 13px 18px;
   background: #d4d4d4;
-  color: #6d6d6d;
+  color: #fff;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  min-height: 58px;
+  font-weight: 400;
+  font-size: 16px;
 }
 
 .submitButton:hover {

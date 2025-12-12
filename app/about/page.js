@@ -27,7 +27,7 @@ export default function AboutPage() {
         <HeroBanner pageKey="about" showHeroImage={false} />
       </div>
 
-      <section className={styles.storySection}>
+      <section className={`${styles.storySection} reveal-up reveal-after-logo`}>
         <div className="container">
           <div className={styles.storyGrid}>
             <div className={styles.storyText}>

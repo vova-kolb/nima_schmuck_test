@@ -59,19 +59,19 @@ const deriveTitle = (hero, fallbackTitle) => {
     sanitize(hero?.herotitle3),
   ].filter(Boolean);
   if (lines.length > 0) return lines.join("\n");
-  if (hero?.heroheader) return hero.heroheader;
-  return fallbackTitle;
+  if (!hero) return fallbackTitle;
+  return "";
 };
 
 export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
   const fallback = useMemo(() => HERO_VARIANTS[pageKey] || HERO_VARIANTS.home, [pageKey]);
   const [heroContent, setHeroContent] = useState({
-    image: null,
+    image: showHeroImage ? fallback.image : null,
     title: fallback.title,
   });
 
   useEffect(() => {
-    setHeroContent({ image: null, title: fallback.title });
+    setHeroContent({ image: showHeroImage ? fallback.image : null, title: fallback.title });
     if (!showHeroImage) return undefined;
 
     let active = true;
@@ -104,7 +104,7 @@ export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
           setHeroContent({
             image: {
               src: imageSrc,
-              alt: heroMatch.heroheader || fallback.image.alt,
+              alt: fallback.image.alt,
             },
             title,
           });

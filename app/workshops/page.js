@@ -1,5 +1,6 @@
 import HeroBanner from "@/components/layout/HeroBanner/HeroBanner";
 import { fetchProducts, isAvailableForStorefront } from "@/lib/api";
+import { FALLBACK_WORKSHOPS } from "@/lib/fallbackWorkshops";
 import WorkshopsContent from "@/components/workshops/WorkshopsContent";
 import styles from "./page.module.css";
 
@@ -16,6 +17,10 @@ export default async function WorkshopsPage() {
     workshops = (items || []).filter(isAvailableForStorefront);
   } catch (e) {
     workshops = [];
+  }
+
+  if (!Array.isArray(workshops) || workshops.length === 0) {
+    workshops = FALLBACK_WORKSHOPS;
   }
 
   return (

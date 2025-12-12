@@ -10,6 +10,7 @@ import styles from './Header.module.css';
 export default function Header() {
   const { totalCount } = useCart();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -23,6 +24,16 @@ export default function Header() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <header className={styles.header}>
@@ -40,35 +51,48 @@ export default function Header() {
           </Link>
         </div>
 
-        <nav className={styles.nav} aria-label="Main navigation">
+        <nav
+          className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}
+          aria-label="Main navigation"
+          id="main-menu"
+        >
+          <button
+            type="button"
+            className={styles.closeButton}
+            aria-label="Close menu"
+            onClick={closeMenu}
+          >
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+          </button>
           <ul className={styles.navList}>
             <li className={styles.navItem}>
-              <Link href="/" className={styles.navLink}>
+              <Link href="/" className={styles.navLink} onClick={closeMenu}>
                 Home
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link href="/catalog" className={styles.navLink}>
+              <Link href="/catalog" className={styles.navLink} onClick={closeMenu}>
                 Catalog
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link href="/workshops" className={styles.navLink}>
+              <Link href="/workshops" className={styles.navLink} onClick={closeMenu}>
                 Workshops
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link href="/custom-creations" className={styles.navLink}>
+              <Link href="/custom-creations" className={styles.navLink} onClick={closeMenu}>
                 Custom Creations
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link href="/about" className={styles.navLink}>
+              <Link href="/about" className={styles.navLink} onClick={closeMenu}>
                 About
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link href="/contacts" className={styles.navLink}>
+              <Link href="/contacts" className={styles.navLink} onClick={closeMenu}>
                 Contact
               </Link>
             </li>
@@ -83,14 +107,22 @@ export default function Header() {
           <button
             type="button"
             className={`${styles.iconButton} ${styles.burgerButton}`}
-            aria-label="Open menu"
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
+            aria-controls="main-menu"
+            onClick={toggleMenu}
           >
-            <span />
-            <span />
-            <span />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
           </button>
 
-          <Link href="/cart" className={`${styles.iconButton} ${styles.cartButton}`} aria-label="Open cart">
+          <Link
+            href="/cart"
+            className={`${styles.iconButton} ${styles.cartButton}`}
+            aria-label="Open cart"
+            data-cart-target
+          >
             <Image
               src="/images/cart-icon.svg"
               alt="Cart icon"
@@ -107,6 +139,13 @@ export default function Header() {
           </Link>
         </div>
       </div>
+      <button
+        type="button"
+        className={`${styles.backdrop} ${isMenuOpen ? styles.backdropVisible : ''}`}
+        aria-hidden="true"
+        tabIndex={-1}
+        onClick={closeMenu}
+      />
     </header>
   );
 }

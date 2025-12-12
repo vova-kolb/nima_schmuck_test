@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import styles from "./WorkshopsList.module.css";
 
+const META_ICONS = {
+  date: "/images/calendar.svg",
+  duration: "/images/clock.svg",
+  participants: "/images/participants.svg",
+};
+
 const FALLBACK_DESCRIPTION =
   "Design and craft a unique pendant that reflects your personal style and vision.";
 const FALLBACK_IMAGE = "/images/workshops-hero.jpg";
@@ -47,7 +53,7 @@ function WorkshopCard({ workshop, onBook }) {
         <ul className={styles.metaList}>
           {meta.map((item) => (
             <li key={item.key} className={styles.metaItem}>
-              <item.Icon className={styles.metaIcon} />
+              <img src={item.icon} alt="" className={styles.metaIcon} loading="lazy" />
               <span>{item.label}</span>
             </li>
           ))}
@@ -106,7 +112,11 @@ export default function WorkshopsList({ workshops = [], onBook = () => {} }) {
   const normalizedWorkshops = useMemo(
     () =>
       (workshops || []).map((item, index) => {
-        const images = Array.isArray(item?.img) ? item.img : [];
+        const images = Array.isArray(item?.img)
+          ? item.img
+          : typeof item?.image === "string" && item.image.trim()
+          ? [item.image]
+          : [];
         const imageSrc = normalizeSrc(images[0] || FALLBACK_IMAGE);
         const id =
           item?.id ??
@@ -114,20 +124,25 @@ export default function WorkshopsList({ workshops = [], onBook = () => {} }) {
           item?.productId ??
           item?.product_id ??
           `workshop-${index}`;
+        const customHref = typeof item?.href === "string" ? item.href.trim() : "";
         const rawDiscount = Number.parseFloat(item?.discount);
         const hasDiscount = Number.isFinite(rawDiscount) && rawDiscount > 0;
         const dateLabel = formatDate(item?.materials);
         const durationLabel = formatDuration(item?.stone);
         const participantsLabel = formatParticipants(item?.typeofmessage);
         const meta = [
-          dateLabel && { key: "date", label: dateLabel, Icon: CalendarIcon },
-          durationLabel && { key: "duration", label: durationLabel, Icon: ClockIcon },
-          participantsLabel && { key: "participants", label: participantsLabel, Icon: UsersIcon },
+          dateLabel && { key: "date", label: dateLabel, icon: META_ICONS.date },
+          durationLabel && { key: "duration", label: durationLabel, icon: META_ICONS.duration },
+          participantsLabel && {
+            key: "participants",
+            label: participantsLabel,
+            icon: META_ICONS.participants,
+          },
         ].filter(Boolean);
 
         return {
           id,
-          href: id ? `/workshops/${encodeURIComponent(id)}` : "#",
+          href: customHref || (id ? `/workshops/${encodeURIComponent(id)}` : "#"),
           name: item?.name || "Jewelry Workshop",
           description: item?.description?.trim() || FALLBACK_DESCRIPTION,
           image: imageSrc,
@@ -142,7 +157,10 @@ export default function WorkshopsList({ workshops = [], onBook = () => {} }) {
   const hasWorkshops = normalizedWorkshops.length > 0;
 
   return (
-    <section className={styles.cardsSection} aria-labelledby="workshops-heading">
+    <section
+      className={`${styles.cardsSection} reveal-up reveal-after-hero`}
+      aria-labelledby="workshops-heading"
+    >
       <div className="container">
         <div className={styles.cardsHeader}>
           <p className={styles.kicker}>Learn & Create</p>
@@ -168,46 +186,5 @@ export default function WorkshopsList({ workshops = [], onBook = () => {} }) {
         )}
       </div>
     </section>
-  );
-}
-
-function CalendarIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <rect x="3" y="4" width="18" height="18" rx="2.5" ry="2.5" strokeWidth="1.5" />
-      <path d="M8 2.5v4.5M16 2.5v4.5M3 11h18" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function ClockIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
-      <path d="M12 7v5l3 2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function UsersIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path
-        d="M7.5 14.5c-2.2.2-4 1.9-4 4.1V20h9.5"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM17 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M15.5 15.2c2.2.2 3.9 1.9 3.9 4.1V20h-4.5"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

@@ -19,7 +19,7 @@
 .layout {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: clamp(20px, 4vw, 36px);
+  gap: clamp(24px, 4.5vw, 40px);
   align-items: start;
 }
 
@@ -59,73 +59,108 @@
 
 .info {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .meta {
   margin: 0;
-  color: #6b6663;
+  color: #7f7a76;
   font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .title {
   margin: 0;
-  font-size: clamp(24px, 3.6vw, 34px);
-  color: #3f3a37;
-  font-weight: 700;
+  font-size: clamp(26px, 3.8vw, 34px);
+  color: #1f1b1a;
+  font-weight: 600;
+}
+
+.infoLine {
+  margin: 4px 0 0;
+  color: #4a4441;
+  font-size: 1rem;
 }
 
 .priceRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 4px;
+  gap: 30px;
+  margin-top: 8px;
 }
 
 .price {
   font-size: 1.2rem;
-  font-weight: 700;
-  color: #d86972;
+  font-weight: 600;
+  color: #d18a8a;
 }
 
-.discount {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #7c2330;
+.priceOldWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.priceOld {
+  text-decoration: line-through;
+  color: #a99b98;
+  font-weight: 500;
+}
+
+.priceDiscountBadge {
+  position: absolute;
+  top: -6px;
+  right: -20px;
+  color: #6d201f;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.priceNew {
+  margin: 0;
+  color: #c35e63;
+  font-size: 1.2rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 6px 10px;
+  padding: 8px 14px;
   border-radius: 999px;
-  background: #f1e9e7;
-  color: #7c2330;
-  font-size: 0.85rem;
+  background: #f3f1f0;
+  color: #5f5955;
+  font-size: 0.86rem;
   font-weight: 600;
+  border: 1px solid #ece7e4;
 }
 
 .description {
-  margin: 4px 0;
-  color: #524c49;
-  line-height: 1.6;
+  margin: 10px 0 0;
+  color: #4a4441;
+  line-height: 1.7;
+  font-size: 0.98rem;
 }
 
 .messageBlock {
   padding: 12px 14px;
-  border-left: 4px solid #d86972;
-  background: #fff7f7;
+  border-left: 4px solid #d18a8a;
+  background: #fff9f9;
   border-radius: 12px;
 }
 
 .message {
   margin: 6px 0 0;
-  color: #524c49;
+  color: #4a4441;
   font-style: italic;
 }

@@ -47,7 +47,7 @@ export default function CustomCreationsPage() {
         <HeroBanner pageKey="custom-creations" />
       </div>
 
-      <section className={styles.processSection}>
+      <section className={`${styles.processSection} reveal-up reveal-after-hero`}>
         <div className="container">
           <div className={styles.processHeader}>
             <p className={styles.kicker}>Bespoke Design</p>
@@ -78,7 +78,10 @@ export default function CustomCreationsPage() {
         </div>
       </section>
 
-      <section className={styles.formSection}>
+      <section
+        className={`${styles.formSection} reveal-up reveal-after-hero`}
+        style={{ "--reveal-delay": "1800ms" }}
+      >
         <div className="container">
           <div className={styles.formHeader}>
             <h2 className={styles.formTitle}>Custom Creations</h2>

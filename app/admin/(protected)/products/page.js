@@ -11,6 +11,7 @@ import {
   uploadProductGallery,
 } from "@/lib/api";
 import { useProducts } from "@/lib/hooks/useProducts";
+import { FALLBACK_WORKSHOPS } from "@/lib/fallbackWorkshops";
 import styles from "./page.module.css";
 
 const PAGE_SIZE = 10;
@@ -73,6 +74,19 @@ export default function AdminProductsPage() {
       return activeTab === "workshops" ? isWorkshop : !isWorkshop;
     });
   }, [products, activeTab]);
+
+  const fallbackAdminWorkshops = useMemo(
+    () =>
+      (FALLBACK_WORKSHOPS || []).map((item) => ({
+        ...item,
+        availabilitystatus: item.availabilitystatus || "in stock",
+      })),
+    []
+  );
+
+  const isWorkshopTab = activeTab === "workshops";
+  const useFallbackWorkshops = isWorkshopTab && visibleProducts.length === 0;
+  const displayedProducts = useFallbackWorkshops ? fallbackAdminWorkshops : visibleProducts;
 
   const categoriesForTab = useMemo(() => {
     const normalize = (value) => String(value || "").toLowerCase();
@@ -183,16 +197,22 @@ export default function AdminProductsPage() {
   };
 
   const currentTitle = activeTab === "workshops" ? "Workshops" : "Products";
+  const displayedCount = displayedProducts.length;
   const perPageLabel =
     activeTab === "workshops"
-      ? `${visibleProducts.length} workshops on this page`
-      : `${visibleProducts.length} products on this page`;
+      ? `${displayedCount} workshops on this page`
+      : `${displayedCount} products on this page`;
 
   const handleOverlayClick = (event) => {
     if (event.target === event.currentTarget) {
       handleCancel();
     }
   };
+
+  const actionsDisabled = submitting || useFallbackWorkshops;
+  const displayedPage = useFallbackWorkshops ? 1 : page;
+  const displayedTotalPages = useFallbackWorkshops ? 1 : totalPages;
+  const displayedTotal = useFallbackWorkshops ? fallbackAdminWorkshops.length : total;
 
   return (
     <section className={styles.section}>
@@ -254,17 +274,17 @@ export default function AdminProductsPage() {
         </div>
 
         <AdminProductTable
-          products={visibleProducts}
+          products={displayedProducts}
           loading={loading}
           error={error}
           onEdit={openEditForm}
           onDelete={handleDelete}
           onRefresh={handleRefresh}
-          page={page}
-          totalPages={totalPages}
-          total={total}
+          page={displayedPage}
+          totalPages={displayedTotalPages}
+          total={displayedTotal}
           onPageChange={handlePageChange}
-          disableActions={submitting}
+          disableActions={actionsDisabled}
           title={`All ${currentTitle}`}
           subtitle={perPageLabel}
           variant={activeTab === "workshops" ? "workshop" : "product"}
@@ -318,4 +338,3 @@ export default function AdminProductsPage() {
     </section>
   );
 }
-
