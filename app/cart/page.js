@@ -31,7 +31,7 @@ export default function CartPage() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <div className={styles.header}>
+        <div className={`${styles.header} reveal-up reveal-delay-sm`}>
           <div>
             <p className={styles.kicker}>Cart</p>
             <h1 className={styles.title}>Your selection</h1>
@@ -44,7 +44,7 @@ export default function CartPage() {
         </div>
 
         {!hasItems ? (
-          <div className={styles.empty}>
+          <div className={`${styles.empty} reveal-up reveal-delay-md`}>
             <p className={styles.emptyTitle}>Your cart is empty</p>
             <p className={styles.emptyText}>
               Add a piece you love to start checkout.
@@ -54,7 +54,7 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div className={styles.layout}>
+          <div className={`${styles.layout} reveal-up reveal-delay-md`}>
             <ul className={styles.list} aria-label="Items in your cart">
               {items.map((item) => {
                 const pricing = resolveItemPricing(item);
@@ -142,7 +142,7 @@ export default function CartPage() {
               })}
             </ul>
 
-            <aside className={styles.summary} aria-label="Order summary">
+            <aside className={`${styles.summary} reveal-up reveal-delay-lg`} aria-label="Order summary">
               <div className={styles.summaryRow}>
                 <span>Subtotal</span>
                 <span className={styles.summaryPrice}>{formatPrice(subtotal)}</span>

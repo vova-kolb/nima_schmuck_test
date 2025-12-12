@@ -79,7 +79,7 @@ export default function CheckoutPage() {
     return (
       <section className={styles.section}>
         <div className="container">
-          <div className={styles.empty}>
+          <div className={`${styles.empty} reveal-up reveal-delay-sm`}>
             <p className={styles.kicker}>Checkout</p>
             <h1 className={styles.title}>Your cart is empty</h1>
             <p className={styles.text}>Add jewelry pieces you love and come back to checkout.</p>
@@ -100,7 +100,7 @@ export default function CheckoutPage() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <div className={styles.layout}>
+        <div className={`${styles.layout} reveal-up reveal-delay-sm`}>
           <div className={styles.main}>
             <p className={styles.kicker}>Checkout</p>
             <h1 className={styles.title}>Review your order</h1>
@@ -108,7 +108,7 @@ export default function CheckoutPage() {
               Confirm items and quantities, then pay securely with Stripe.
             </p>
 
-            <div className={styles.card}>
+            <div className={`${styles.card} reveal-up reveal-delay-md`}>
               <div className={styles.cardHeader}>
                 <div>
                   <p className={styles.cardTitle}>Items</p>
@@ -157,7 +157,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <aside className={styles.summary} aria-label="Order summary">
+          <aside className={`${styles.summary} reveal-up reveal-delay-lg`} aria-label="Order summary">
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
               <span className={styles.summaryValue}>{formatPrice(subtotal)}</span>
