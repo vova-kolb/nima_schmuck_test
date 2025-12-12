@@ -69,6 +69,13 @@ export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
     image: showHeroImage ? fallback.image : null,
     title: fallback.title,
   });
+  const titleLines = useMemo(() => {
+    const rawTitle = heroContent.title || "";
+    return rawTitle
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }, [heroContent.title]);
 
   useEffect(() => {
     setHeroContent({ image: showHeroImage ? fallback.image : null, title: fallback.title });
@@ -149,20 +156,28 @@ export default function HeroBanner({ pageKey = "home", showHeroImage = true }) {
                 alt={heroContent.image.alt}
                 fill
                 sizes="(min-width: 1500px) 1440px, calc(100vw - 30px)"
-                className={styles.heroImage}
-                priority
-              />
-            </div>
+            className={styles.heroImage}
+            priority
+          />
+        </div>
 
-            {heroContent.title && (
-              <div className={styles.heroTextOverlay}>
-                <h1 id="hero-heading" className={styles.heroTitle}>
-                  {heroContent.title}
-                </h1>
-              </div>
-            )}
+        {titleLines.length > 0 && (
+          <div className={styles.heroTextOverlay}>
+            <h1 id="hero-heading" className={styles.heroTitle}>
+              {titleLines.map((line, index) => (
+                <span
+                  key={`${line}-${index}`}
+                  className={styles.heroTitleLine}
+                  style={{ "--line-index": index }}
+                >
+                  {line}
+                </span>
+              ))}
+            </h1>
           </div>
-        </section>
+        )}
+      </div>
+    </section>
       )}
     </>
   );
